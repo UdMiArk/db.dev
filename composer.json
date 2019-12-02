@@ -1,0 +1,32 @@
+{
+	
+	
+	"type": "project",
+	"minimum-stability": "stable",
+	"require": {
+		"php": ">=7.3.0",
+		"ext-dom": "*",
+		"ext-simplexml": "*",
+		"ext-intl": "*",
+		"ext-ctype": "*",
+		"ext-openssl": "*",
+		"yiisoft/yii2": "~2.0.30",
+		"yiisoft/yii2-swiftmailer": "~2.0.0 || ~2.1.0"
+	},
+	"require-dev": {
+		"yiisoft/yii2-debug": "~2.1.0",
+		"kint-php/kint": "^3.2"
+	},
+	"config": {
+		"process-timeout": 1800,
+		"fxp-asset": {
+			"enabled": false
+		}
+	},
+	"repositories": [
+		{
+			"type": "composer",
+			"url": "https://asset-packagist.org"
+		}
+	]
+}

@@ -1,0 +1,26 @@
+# Your personal GitHub token
+github_token: <your-personal-github-token>
+# Read more: https://github.com/blog/1509-personal-api-tokens
+# You can generate it here: https://github.com/settings/tokens
+
+# Guest OS timezone
+timezone: Europe/London
+
+# Are we need check box updates for every 'vagrant up'?
+box_check_update: false
+
+# Virtual machine name
+machine_name: y2aa
+
+# Virtual machine IP
+ip: 192.168.83.137
+
+# Host machine IP (for xdebug)
+host_ip: 192.168.83.1
+xdebug_idekey: PHPSTORM
+
+# Virtual machine CPU cores number
+cpus: 1
+
+# Virtual machine RAM
+memory: 1024

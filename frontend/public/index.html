@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="utf-8">
+	<meta content="IE=edge" http-equiv="X-UA-Compatible">
+	<meta content="width=device-width,initial-scale=1.0" id="meta_vp" name="viewport">
+	<!--suppress HtmlUnknownTarget -->
+	<link href="<%= BASE_URL %>favicon.ico" rel="icon">
+	<title><%= htmlWebpackPlugin.options.title %></title>
+	<script>
+		//
+		(function () {
+			var mobile = false,
+				minWidth = parseInt("<%= htmlWebpackPlugin.options.minScreenWidth || 320 %>"),
+				adjustWidth = (function () {
+					var newMobile = window.screen && window.screen.width && window.screen.width < minWidth || false;
+					if (newMobile !== mobile) {
+						mobile = newMobile;
+						document.getElementById("meta_vp")
+							.setAttribute("content",
+								newMobile
+									? "user-scalable=no,width=450"
+									: "width=device-width,initial-scale=1.0"
+							);
+					}
+				});
+
+			window.addEventListener("resize", adjustWidth);
+			window.addEventListener("load", adjustWidth);
+		})();
+		window.someOption = "<%= htmlWebpackPlugin.options.someOption %>";
+	</script>
+</head>
+<body>
+<noscript>
+	<strong><%= htmlWebpackPlugin.options.messageJsDisabled %></strong>
+</noscript>
+<div id="app"></div>
+<!-- built files will be auto injected -->
+<% if (NODE_ENV === "production") { %>
+<div id="counters"></div>
+<% } %>
+</body>
+</html>

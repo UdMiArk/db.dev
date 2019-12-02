@@ -1,0 +1,12 @@
+# use index.php as index file
+DirectoryIndex index.php
+# ...other settings...
+# Apache 2.4
+Require all granted
+
+RewriteEngine On
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+# Otherwise forward the request to index.php
+RewriteRule . index.php

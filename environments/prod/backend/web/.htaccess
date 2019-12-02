@@ -1,0 +1,21 @@
+# use index.php as index file
+DirectoryIndex index.php
+# ...other settings...
+# Apache 2.4
+Require all granted
+
+RewriteEngine On
+
+# For larger pdf files
+php_value upload_max_filesize 50M
+php_value post_max_size 60M
+php_value max_execution_time 60
+php_value max_input_time 60
+
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,NE,R=301]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+# Otherwise forward the request to index.php
+RewriteRule . index.php
