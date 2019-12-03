@@ -15,6 +15,7 @@ use yii\web\Request;
  * @property-read Request $request
  */
 class BackendController extends Controller {
+	//public $enableCsrfValidation = false;
 	public $authMinimalLevel = '@';
 
 	public function behaviors() {

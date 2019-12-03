@@ -17,7 +17,9 @@ use yii\web\IdentityInterface;
  * @property string $login
  * @property string $name
  * @property string $email
+ * @property string $domain
  * @property string $auth_key
+ * @property integer $status
  */
 class User extends CommonRecord implements IdentityInterface {
 	public function attributeLabels() {
@@ -26,6 +28,8 @@ class User extends CommonRecord implements IdentityInterface {
 			'login' => "Логин",
 			'name' => "Имя",
 			'email' => "E-mail",
+			'domain' => "Домен",
+			'status' => "Статус",
 		];
 	}
 
@@ -48,10 +52,11 @@ class User extends CommonRecord implements IdentityInterface {
 	 * Finds user by login
 	 *
 	 * @param string $login
+	 * @param string $domain
 	 * @return static|null
 	 */
-	public static function findByLogin($login) {
-		return static::findOne(['login' => $login]);
+	public static function findByLogin($login, $domain) {
+		return static::findOne(['domain' => $domain, 'login' => $login]);
 	}
 
 	public function getId() {

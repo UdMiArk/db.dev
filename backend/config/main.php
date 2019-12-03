@@ -16,11 +16,15 @@ return [
 	'components' => [
 		'request' => [
 			'csrfParam' => '_csrf',
+			'parsers' => [
+				'application/json' => \yii\web\JsonParser::class,
+			],
 		],
 		'user' => [
 			'identityClass' => 'common\models\User',
 			'enableAutoLogin' => true,
 			'identityCookie' => ['name' => '_id', 'httpOnly' => true],
+			'loginUrl' => ['auth/login'],
 		],
 		'session' => [
 			// this is the name of the session cookie used for login on the backend

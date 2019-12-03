@@ -16,9 +16,12 @@ return [
 		'@npm' => '@vendor/npm-asset',
 	],
 	'controllerMap' => [
-		'fixture' => [
-			'class' => 'yii\console\controllers\FixtureController',
-			'namespace' => 'common\fixtures',
+		'migrate' => [
+			'class' => \yii\console\controllers\MigrateController::class,
+			'migrationPath' => [
+				'@app/migrations',
+				'@yii/rbac/migrations',
+			],
 		],
 	],
 	'components' => [
@@ -35,9 +38,6 @@ return [
 					'logFile' => '@runtime/logs/commands.log',
 				],
 			],
-		],
-		'cache' => [
-			'cachePath' => '@backend/runtime/cache',
 		],
 	],
 	'params' => $params,
