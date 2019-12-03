@@ -9,6 +9,10 @@ use yii\helpers\Inflector;
 use yii\helpers\StringHelper;
 
 class CommonRecord extends ActiveRecord {
+	const SCENARIO_CREATE = 'create';
+	const SCENARIO_UPDATE = 'update';
+	const SCENARIO_DELETE = 'delete';
+
 	public static function tableName() {
 		return "{{%" . static::modelName() . "}}";
 	}

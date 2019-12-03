@@ -2,7 +2,7 @@
 
 use console\components\Migration;
 
-class m000000_000001_init_user extends Migration {
+class m191202_124200_init_user extends Migration {
 	const TABLE_USER = '{{%user}}';
 
 	public function up() {
