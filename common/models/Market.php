@@ -26,4 +26,18 @@ class Market extends CommonRecord {
 	public function getProducts() {
 		return $this->hasMany(Product::class, ['market_id' => 'id']);
 	}
+
+	public static function cachedAll() {
+		return Market::find()
+			->select(['__id' => 'id', 'id_ext', 'name'])
+			->orderBy(['id_ext' => SORT_ASC])->asArray()
+			->all();
+	}
+
+	public function getFrontendInfo() {
+		return array_merge(parent::getFrontendInfo(), [
+			'id_ext' => $this->id_ext,
+			'name' => $this->name,
+		]);
+	}
 }

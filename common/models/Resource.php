@@ -87,4 +87,29 @@ class Resource extends CommonRecord {
 	public function getType() {
 		return $this->hasOne(ResourceType::class, ['id' => 'type_id']);
 	}
+
+	public function getFrontendInfo($withUser = false, $withProduct = false, $withType = false) {
+		$result = array_merge(parent::getFrontendInfo(), [
+			'created_at' => $this->created_at,
+			'updated_at' => $this->updated_at,
+			'status_at' => $this->updated_at,
+			'name' => $this->name,
+			'status' => $this->status,
+			'archived' => $this->archived,
+			'comment' => $this->comment,
+			'data' => $this->data,
+		]);
+
+		if ($withUser) {
+			$result['user'] = $this->user->getFrontendInfo();
+		}
+		if ($withProduct) {
+			$result['product'] = $this->product->getFrontendInfo(true);
+		}
+		if ($withType) {
+			$result['type'] = $this->type->getFrontendInfo(true);
+		}
+
+		return $result;
+	}
 }

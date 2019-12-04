@@ -34,4 +34,27 @@ class ResourceType extends CommonRecord {
 	public function getTypeAttributes() {
 		return $this->hasMany(ResourceTypeAttribute::class, ['resource_type_id' => 'id']);
 	}
+
+	public static function getAvailable($withAttributes = false) {
+		$query = static::find()->andWhere(['disabled' => false])->orderBy(['name' => SORT_ASC]);
+		if ($withAttributes) {
+			$query->with('typeAttributes');
+		}
+		return $query->all();
+	}
+
+	public function getFrontendInfo($withAttributes = false) {
+		$result = array_merge(parent::getFrontendInfo(), [
+			'name' => $this->name,
+			'description' => $this->description,
+		]);
+		if ($withAttributes) {
+			$attributes = [];
+			foreach ($this->typeAttributes as $attribute) {
+				$attributes [] = $attribute->getFrontendInfo();
+			}
+			$result['attributes'] = $attributes;
+		}
+		return $result;
+	}
 }

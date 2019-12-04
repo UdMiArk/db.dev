@@ -38,4 +38,14 @@ class CommonRecord extends ActiveRecord {
 		}
 		return null;
 	}
+
+	public function getFrontendInfo() {
+		return [
+			'__id' => $this->primaryKey,
+		];
+	}
+
+	public function formName() {
+		return '';
+	}
 }

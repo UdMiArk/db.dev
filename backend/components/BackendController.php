@@ -3,6 +3,7 @@
 
 namespace backend\components;
 
+use common\models\User;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -13,6 +14,7 @@ use yii\web\Request;
  * @package backend\components
  *
  * @property-read Request $request
+ * @property-read User $user
  */
 class BackendController extends Controller {
 	//public $enableCsrfValidation = false;
@@ -34,5 +36,13 @@ class BackendController extends Controller {
 
 	public function getRequest() {
 		return Yii::$app->request;
+	}
+
+	/**
+	 * @return User|null
+	 */
+	public function getUser() {
+		/** @noinspection PhpIncompatibleReturnTypeInspection */
+		return Yii::$app->user->identity;
 	}
 }

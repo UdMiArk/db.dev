@@ -44,4 +44,13 @@ class ResourceTypeAttribute extends CommonRecord {
 	public function getResourceType() {
 		return $this->hasOne(ResourceType::class, ['id' => 'resource_type_id']);
 	}
+
+	public function getFrontendInfo() {
+		return array_merge(parent::getFrontendInfo(), [
+			'name' => $this->name,
+			'type' => $this->type,
+			'required' => $this->required,
+			'description' => $this->description,
+		]);
+	}
 }

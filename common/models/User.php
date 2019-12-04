@@ -39,13 +39,11 @@ class User extends CommonRecord implements IdentityInterface {
 		];
 	}
 
-
-	public static function findIdentity($id) {
-		return static::findOne($id);
-	}
-
-	public static function findIdentityByAccessToken($token, $type = null) {
-		throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
+	public function getFrontendInfo() {
+		return array_merge(parent::getFrontendInfo(), [
+			'name' => $this->name,
+			'email' => $this->email,
+		]);
 	}
 
 	/**
@@ -57,6 +55,15 @@ class User extends CommonRecord implements IdentityInterface {
 	 */
 	public static function findByLogin($login, $domain) {
 		return static::findOne(['domain' => $domain, 'login' => $login]);
+	}
+
+	// IdentityInterface methods
+	public static function findIdentity($id) {
+		return static::findOne($id);
+	}
+
+	public static function findIdentityByAccessToken($token, $type = null) {
+		throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
 	}
 
 	public function getId() {
