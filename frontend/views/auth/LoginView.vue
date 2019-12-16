@@ -1,0 +1,15 @@
+<template>
+	<BaseViewContainer>
+		<LoginForm/>
+	</BaseViewContainer>
+</template>
+
+<script>
+	import BaseViewContainer from "@components/BaseViewContainer";
+	import LoginForm from "@components/actions/LoginForm";
+
+	export default {
+		name: "LoginView",
+		components: {LoginForm, BaseViewContainer}
+	};
+</script>

@@ -7,6 +7,7 @@
 	<!--suppress HtmlUnknownTarget -->
 	<link href="<%= BASE_URL %>favicon.ico" rel="icon">
 	<title><%= htmlWebpackPlugin.options.title %></title>
+	<link href="https://cdn.materialdesignicons.com/2.5.94/css/materialdesignicons.min.css" rel="stylesheet">
 	<script>
 		//
 		(function () {
@@ -28,14 +29,91 @@
 			window.addEventListener("resize", adjustWidth);
 			window.addEventListener("load", adjustWidth);
 		})();
-		window.someOption = "<%= htmlWebpackPlugin.options.someOption %>";
 	</script>
+	<style type="text/css">
+		.__initial-pageloader {
+			bottom: 0;
+			left: 0;
+			right: 0;
+			top: 0;
+
+			position: fixed;
+			padding-top: 2em;
+			background: #00d1b2;
+			z-index: 999998;
+			transition: transform .35s ease-out, -webkit-transform .35s ease-out;
+			will-change: transform;
+		}
+
+		.__initial-pageloader.is-light {
+			background-color: #f5f5f5;
+		}
+
+		.__initial-pageloader.is-light::after {
+			border-color: #363636;
+			-webkit-animation: loader-figure-light 1.15s infinite cubic-bezier(.215, .61, .355, 1);
+			animation: loader-figure-light 1.15s infinite cubic-bezier(.215, .61, .355, 1);
+		}
+
+		.__initial-pageloader.is-light .title {
+			color: #363636;
+		}
+
+		.__initial-pageloader {
+			-webkit-transform: translateY(-100%);
+			transform: translateY(-100%);
+		}
+
+		.__initial-pageloader.is-active {
+			-webkit-transform: translateY(0);
+			transform: translateY(0);
+		}
+
+		.__initial-pageloader::after {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			display: block;
+			border-radius: 100%;
+			content: '';
+			z-index: 9999;
+			-webkit-transform: translate(-50%, -50%);
+			transform: translate(-50%, -50%);
+			width: 0;
+			height: 0;
+			box-sizing: border-box;
+			border: 0 solid #fff;
+			-webkit-animation: loader-figure 1.15s infinite cubic-bezier(.215, .61, .355, 1);
+			animation: loader-figure 1.15s infinite cubic-bezier(.215, .61, .355, 1);
+		}
+
+		.__initial-pageloader .title {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			-webkit-transform: translateX(-50%);
+			transform: translateX(-50%);
+			margin: 2em 0 0 0;
+			font-size: .875em;
+			letter-spacing: .1em;
+			line-height: 1.5em;
+			color: #fff;
+			white-space: nowrap;
+		}
+	</style>
 </head>
 <body>
 <noscript>
 	<strong><%= htmlWebpackPlugin.options.messageJsDisabled %></strong>
 </noscript>
-<div id="app"></div>
+<div class="__initial-pageloader is-light" id="app"><span class="title">Загрузка ресурсов..</span></div>
+<script id="app_loader_show" type="application/javascript">
+	(function () {
+		document.getElementById("app").classList.add("is-active");
+		const elScriptHost = document.getElementById("app_loader_show");
+		elScriptHost.parentElement.removeChild(elScriptHost);
+	})();
+</script>
 <!-- built files will be auto injected -->
 <% if (NODE_ENV === "production") { %>
 <div id="counters"></div>

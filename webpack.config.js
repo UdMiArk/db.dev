@@ -10,7 +10,11 @@ module.exports = {
 	},
 	resolve: {
 		alias: {
-			"@": path.resolve(__dirname, "frontend")
+			"@": path.resolve(__dirname, "frontend"),
+			"@components": path.resolve(__dirname, "frontend", "components"),
+			"@views": path.resolve(__dirname, "frontend", "views"),
+			"@assets": path.resolve(__dirname, "frontend", "assets"),
+			"@plugins": path.resolve(__dirname, "frontend", "plugins")
 		}
 	},
 	performance: {
