@@ -3,7 +3,11 @@
 namespace common\models;
 
 use common\components\CommonRecord;
+use common\components\handlers\AttributeFileHandler;
+use common\components\handlers\AttributeFilesHandler;
+use common\components\handlers\AttributeHandler;
 use common\data\EAttributeType;
+use yii\base\Exception;
 
 /**
  * ResourceTypeAttribute model
@@ -16,8 +20,16 @@ use common\data\EAttributeType;
  * @property boolean $required
  *
  * @property-read ResourceType $resourceType
+ * @property-read AttributeHandler $handler
  */
 class ResourceTypeAttribute extends CommonRecord {
+	public static function getFieldTypeHandlers() {
+		return [
+			EAttributeType::FILE => AttributeFileHandler::class,
+			EAttributeType::FILES => AttributeFilesHandler::class,
+		];
+	}
+
 	public function attributeLabels() {
 		return [
 			'resource_type_id' => "Тип ресурса",
@@ -41,6 +53,12 @@ class ResourceTypeAttribute extends CommonRecord {
 		]);
 	}
 
+	public function getHandler() {
+		$handlerClass = $this::getFieldTypeHandlers();
+		$handlerClass = @$handlerClass[$this->type];
+		return $handlerClass ? new $handlerClass($this) : null;
+	}
+
 	public function getResourceType() {
 		return $this->hasOne(ResourceType::class, ['id' => 'resource_type_id']);
 	}
@@ -52,5 +70,53 @@ class ResourceTypeAttribute extends CommonRecord {
 			'required' => $this->required,
 			'description' => $this->description,
 		]);
+	}
+
+	/**
+	 * @param $data
+	 * @param bool $unprocessed
+	 * @param array $attrErrors
+	 *
+	 * @return boolean
+	 */
+	public function validateResourceData($data, $unprocessed = false, &$attrErrors = []) {
+		if (is_null($data)) {
+			if ($this->required) {
+				$attrErrors [] = "Поле \"" . $this->name . "\" обязательно к заполнению";
+				return false;
+			}
+			return true;
+		}
+		$handler = $this->handler;
+		if (!$handler) {
+			$attrErrors [] = "Не удалось определить тип поля";
+			return false;
+		}
+		return $handler->validate($data, $unprocessed, $attrErrors);
+	}
+
+	/**
+	 * @param $data
+	 * @param bool $unprocessed
+	 * @return string[]
+	 */
+	public function getFileNames($data, $unprocessed = false) {
+		return $this->handler->getFileNames($data, $unprocessed);
+	}
+
+	/**
+	 * Process uploaded resource data before storage
+	 *
+	 * @param mixed $data
+	 * @param Resource $resource
+	 * @return array
+	 * @throws Exception
+	 */
+	public function processResourceData($data, Resource $resource) {
+		$handler = $this->handler;
+		if (!$handler) {
+			throw new Exception("Failed to initialize attribute handler for attribute '" . $this->name . "' (type '" . $this->type . "')");
+		}
+		return $handler->process($data, $resource);
 	}
 }

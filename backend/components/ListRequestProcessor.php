@@ -17,10 +17,14 @@ class ListRequestProcessor {
 	public $paramFilters = 'filters';
 
 	public $filterHandlers = null;
+	public $filterOnlyByHandlers = false;
 
 	public $sortingHandlers = null;
+	public $sortingOnlyByHandlers = false;
 
 	public $paramSorting = 'sorting';
+	public $paramSortingDesc = 'desc';
+	public $paramSortingAsc = 'asc';
 
 	/* @var Request */
 	public $request = null;
@@ -85,12 +89,12 @@ class ListRequestProcessor {
 	public function applyFilters($query) {
 		$filters = $this->getFilters();
 		if ($this->filterHandlers) foreach ($this->filterHandlers as $filter => $handler) {
-			if (@$filters[$filter]) {
+			if (!is_null(@$filters[$filter])) {
 				call_user_func($handler, $query, $filters[$filter], $filter, $this);
 				unset($filters[$filter]);
 			}
 		}
-		if (!empty($filters)) {
+		if (!$this->filterOnlyByHandlers && !empty($filters)) {
 			$query->andWhere($filters);
 		}
 		return $query;
@@ -112,7 +116,7 @@ class ListRequestProcessor {
 				$attr = array_keys($sorting)[0];
 				$dir = $sorting[$attr];
 				call_user_func($this->sortingHandlers[$attr], $query, $attr, $dir, $this);
-			} else {
+			} elseif (!$this->sortingOnlyByHandlers) {
 				$query->orderBy($sorting);
 			}
 		}
@@ -131,7 +135,7 @@ class ListRequestProcessor {
 		foreach (explode('|', $sortingStr) as $sortingItem) {
 			$sortingItem = explode(':', $sortingItem);
 			$attr = $sortingItem[0];
-			$dir = intval(@$sortingItem[1]) ? SORT_ASC : SORT_DESC;
+			$dir = @$sortingItem[1] === $this->paramSortingDesc ? SORT_DESC : SORT_ASC;
 			if (!empty($attr)) {
 				$sorting[$attr] = $dir;
 			}

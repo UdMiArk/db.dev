@@ -15,28 +15,18 @@ return [
 		],
 		'ad' => [
 			'class' => \common\components\Adldap2Wrapper::class,
-			'defaultProvider' => '@yar.owen',
-			'providers' => [
-				'@yar.owen' => [
-					'autoconnect' => false,
-					'config' => [
-						'account_suffix' => '@yar.owen',
-						'hosts' => ['10.2.1.4'],
-						'base_dn' => 'dc=yar,dc=owen',
-
-						//'username' => '',
-						//'password' => '',
-
-						//'port' => 636,
-						//'use_ssl' => true,
-						//'use_tls' => true,
-					],
-				],
-			],
 		],
 		'authManager' => [
-			'class' => \yii\rbac\DbManager::class,
+			'class' => \common\components\AuthManager::class,
 			'cache' => 'cache',
+			'defaultRoles' => [\common\data\RBACData::ROLE_DEFAULT],
+		],
+		'fileStorage' => [
+			'class' => \yii2tech\filestorage\local\Storage::class,
+			'basePath' => '@proot/storage',
+			'baseUrl' => '/storage',
+			'dirPermission' => 0755,
+			'filePermission' => 0644,
 		],
 	],
 ];

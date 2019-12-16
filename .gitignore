@@ -46,4 +46,6 @@ phpunit.phar
 
 /common/runtime
 
+/storage
+
 /z-dump

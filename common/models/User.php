@@ -19,6 +19,7 @@ use yii\web\IdentityInterface;
  * @property string $email
  * @property string $domain
  * @property string $auth_key
+ * @property string $sc_key - Key to identify user on erp.db.dev
  * @property integer $status
  */
 class User extends CommonRecord implements IdentityInterface {

@@ -20,11 +20,11 @@ class FormLogin extends FormModel {
 	public $login;
 	public $domain;
 	public $password;
-	public $rememberMe;
+	public $remember;
 
 	public function init() {
 		parent::init();
-		$this->rememberMe = true;
+		$this->remember = true;
 		$this->domain = $this->adManager->defaultProvider;
 	}
 
@@ -33,7 +33,7 @@ class FormLogin extends FormModel {
 			'domain' => "Домен",
 			'login' => "Логин",
 			'password' => "Пароль",
-			'rememberMe' => "Запомнить сессию",
+			'remember' => "Запомнить сессию",
 		];
 	}
 
@@ -47,10 +47,19 @@ class FormLogin extends FormModel {
 	public function getAvailableProviders() {
 		$providers = $this->adManager->getProviders();
 		$result = [];
+		$firstProvider = $this->domain;
+		$result [] = [
+			'value' => $firstProvider,
+			'label' => $providers[$firstProvider]->getConfiguration()->get('account_suffix') ?? $firstProvider,
+		];
 		foreach ($providers as $key => $provider) {
 			/* @var Provider $provider */
-			$suffix = $provider->getConfiguration()->get('account_suffix');
-			$result[$key] = $suffix ? $suffix : $key;
+			if ($key !== $firstProvider) {
+				$result [] = [
+					'value' => $key,
+					'label' => $provider->getConfiguration()->get('account_suffix') ?? $key,
+				];
+			}
 		}
 		return $result;
 	}
@@ -59,7 +68,7 @@ class FormLogin extends FormModel {
 		return [
 			[['login'], 'trim'],
 			[['login', 'domain', 'password'], 'string'],
-			[['rememberMe'], 'boolean'],
+			[['remember'], 'boolean'],
 			[['domain'], 'in', 'range' => array_keys($this->adManager->getProviders()), 'message' => 'Указан неизвестный домен'],
 
 			[['login', 'domain', 'password'], 'required'],
@@ -73,7 +82,7 @@ class FormLogin extends FormModel {
 		$adManager = $this->adManager;
 		$provider = $adManager->getProvider($this->domain);
 
-		if (!$provider->auth()->attempt($this->login, $this->password, true)) {
+		if (!$provider->auth()->attempt($this->login, $this->password/*, true*/)) {
 			$this->addError('password', 'Неизвестная комбинация имени пользователя и пароля');
 			return false;
 		}
@@ -81,6 +90,6 @@ class FormLogin extends FormModel {
 		if (!$user) {
 			return false;
 		}
-		return \Yii::$app->user->login($user, $this->rememberMe ? $this::REMEMBER_ME_DURATION : 0);
+		return \Yii::$app->user->login($user, $this->remember ? $this::REMEMBER_ME_DURATION : 0);
 	}
 }

@@ -18,7 +18,7 @@ use yii\web\Request;
  */
 class BackendController extends Controller {
 	//public $enableCsrfValidation = false;
-	public $authMinimalLevel = '@';
+	public $authFullPermissions = '@';
 
 	public function behaviors() {
 		return [
@@ -27,7 +27,7 @@ class BackendController extends Controller {
 				'rules' => [
 					[
 						'allow' => true,
-						'roles' => [$this->authMinimalLevel],
+						'roles' => [$this->authFullPermissions],
 					],
 				],
 			],

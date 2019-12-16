@@ -3,6 +3,7 @@
 namespace common\models;
 
 use common\components\CommonRecord;
+use common\components\FileStorageHelper;
 
 /**
  * Product model
@@ -16,6 +17,28 @@ use common\components\CommonRecord;
  * @property-read Market $market
  */
 class Product extends CommonRecord {
+	public function init() {
+		parent::init();
+		$this->on($this::EVENT_AFTER_INSERT, [$this, 'evHandleInsert']);
+	}
+
+	public function generatePath() {
+		$result = $this->name;
+		if ($this->primaryKey) {
+			$result .= ' (id ' . $this->primaryKey . ')';
+		}
+		return '/' . FileStorageHelper::preparePath($result);
+	}
+
+	protected function evHandleInsert() {
+		$newPath = $this->generatePath();
+		if ($this->path !== $newPath) {
+			$this->path = $newPath;
+			$this->setOldAttribute('path', $newPath);
+			$this::updateAll(['path' => $newPath], ['id' => $this->primaryKey]);
+		}
+	}
+
 	public function attributeLabels() {
 		return [
 			'id_ext' => "ID",

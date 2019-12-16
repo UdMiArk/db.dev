@@ -6,6 +6,8 @@ namespace backend\controllers;
 
 use backend\components\BackendController;
 use backend\models\FormLogin;
+use common\data\RBACData;
+use common\models\Resource;
 use common\models\User;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -22,7 +24,7 @@ class AuthController extends BackendController {
 					],
 					[
 						'allow' => true,
-						'roles' => [$this->authMinimalLevel],
+						'roles' => [$this->authFullPermissions],
 					],
 				],
 			],
@@ -40,13 +42,32 @@ class AuthController extends BackendController {
 		return $this->asJson($this->_prepareAuthData(\Yii::$app->user));
 	}
 
+	protected function _getBasePermissions(\yii\web\User $user) {
+		$result = [];
+
+		if ($user->can(RBACData::ROLE_SUPERUSER)) {
+			$result['canManageUsers'] = true;
+		}
+		if ($user->can(Resource::RBAC_VIEW, ['index' => true])) {
+			$result['canViewResources'] = true;
+			if ($user->can(Resource::RBAC_CREATE)) {
+				$result['canCreateResources'] = true;
+			}
+			if ($user->can(Resource::RBAC_APPROVE, ['index' => true])) {
+				$result['canModerateResources'] = true;
+			}
+		}
+
+		return $result;
+	}
+
 	protected function _prepareAuthData(\yii\web\User $user) {
 		$result = [
-			'csrf_token' => $this->request->getCsrfToken(),
+			'csrfToken' => $this->request->getCsrfToken(),
 		];
 		if ($user->isGuest) {
 			$result['authenticated'] = false;
-			$result['user'] = null;
+			$result['domains'] = (new FormLogin())->getAvailableProviders();
 		} else {
 			/* @var User $identity */
 			$identity = $user->identity;
@@ -57,6 +78,7 @@ class AuthController extends BackendController {
 					'name' => $identity->name,
 					'email' => $identity->email,
 				],
+				'permissions' => $this->_getBasePermissions($user),
 			]);
 		}
 		return $result;

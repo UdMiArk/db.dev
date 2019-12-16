@@ -4,7 +4,7 @@
 		"Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
 		"This file is @generated automatically"
 	],
-	"content-hash": "50214280dfce91fd984f41b07429f378",
+	"content-hash": "c4a314a69ea0ddc27193bf10f539fa80",
 	"packages": [
 		{
 			"name": "adldap2/adldap2",
@@ -70,7 +70,7 @@
 			"version": "3.3.11",
 			"source": {
 				"type": "git",
-				"url": "git@github.com:RobinHerbots/Inputmask.git",
+				"url": "https://github.com/RobinHerbots/Inputmask.git",
 				"reference": "5e670ad62f50c738388d4dcec78d2888505ad77b"
 			},
 			"dist": {
@@ -369,16 +369,16 @@
 		},
 		{
 			"name": "illuminate/contracts",
-			"version": "v6.6.0",
+			"version": "v6.7.0",
 			"source": {
 				"type": "git",
 				"url": "https://github.com/illuminate/contracts.git",
-				"reference": "5e32ed8640ff70179dfde98eda04790b1cfa9a41"
+				"reference": "484727dc42f1c9dbffb2182f6fb0d01ca1aba556"
 			},
 			"dist": {
 				"type": "zip",
-				"url": "https://api.github.com/repos/illuminate/contracts/zipball/5e32ed8640ff70179dfde98eda04790b1cfa9a41",
-				"reference": "5e32ed8640ff70179dfde98eda04790b1cfa9a41",
+				"url": "https://api.github.com/repos/illuminate/contracts/zipball/484727dc42f1c9dbffb2182f6fb0d01ca1aba556",
+				"reference": "484727dc42f1c9dbffb2182f6fb0d01ca1aba556",
 				"shasum": ""
 			},
 			"require": {
@@ -409,7 +409,7 @@
 			],
 			"description": "The Illuminate Contracts package.",
 			"homepage": "https://laravel.com",
-			"time": "2019-10-21T18:36:48+00:00"
+			"time": "2019-12-06T13:40:59+00:00"
 		},
 		{
 			"name": "psr/container",
@@ -929,16 +929,16 @@
 		},
 		{
 			"name": "tightenco/collect",
-			"version": "v6.5.2",
+			"version": "v6.6.2",
 			"source": {
 				"type": "git",
 				"url": "https://github.com/tightenco/collect.git",
-				"reference": "402a89f11c55b86c5a081c267957a0c071375278"
+				"reference": "67525fa5ebaab40acb69f0507fa91e6bce212d5c"
 			},
 			"dist": {
 				"type": "zip",
-				"url": "https://api.github.com/repos/tightenco/collect/zipball/402a89f11c55b86c5a081c267957a0c071375278",
-				"reference": "402a89f11c55b86c5a081c267957a0c071375278",
+				"url": "https://api.github.com/repos/tightenco/collect/zipball/67525fa5ebaab40acb69f0507fa91e6bce212d5c",
+				"reference": "67525fa5ebaab40acb69f0507fa91e6bce212d5c",
 				"shasum": ""
 			},
 			"require": {
@@ -975,7 +975,60 @@
 				"collection",
 				"laravel"
 			],
-			"time": "2019-11-22T20:59:40+00:00"
+			"time": "2019-12-06T22:56:34+00:00"
+		},
+		{
+			"name": "yii2tech/file-storage",
+			"version": "1.1.4",
+			"source": {
+				"type": "git",
+				"url": "https://github.com/yii2tech/file-storage.git",
+				"reference": "3a8af76a30346e27f4c4d1ec37268d1771b6fd7c"
+			},
+			"dist": {
+				"type": "zip",
+				"url": "https://api.github.com/repos/yii2tech/file-storage/zipball/3a8af76a30346e27f4c4d1ec37268d1771b6fd7c",
+				"reference": "3a8af76a30346e27f4c4d1ec37268d1771b6fd7c",
+				"shasum": ""
+			},
+			"require": {
+				"yiisoft/yii2": "~2.0.13"
+			},
+			"type": "yii2-extension",
+			"extra": {
+				"branch-alias": {
+					"dev-master": "1.0.x-dev"
+				}
+			},
+			"autoload": {
+				"psr-4": {
+					"yii2tech\\filestorage\\": "src"
+				}
+			},
+			"notification-url": "https://packagist.org/downloads/",
+			"license": [
+				"BSD-3-Clause"
+			],
+			"authors": [
+				{
+					"name": "Paul Klimov",
+					"email": "klimov.paul@gmail.com"
+				}
+			],
+			"description": "File storage abstraction layer for Yii2",
+			"keywords": [
+				"GridFS",
+				"abstraction",
+				"amazon",
+				"file",
+				"mongodb",
+				"s3",
+				"sftp",
+				"ssh",
+				"storage",
+				"yii2"
+			],
+			"time": "2018-02-09T13:58:21+00:00"
 		},
 		{
 			"name": "yiisoft/yii2",
@@ -1386,7 +1439,8 @@
 		"ext-intl": "*",
 		"ext-ctype": "*",
 		"ext-openssl": "*",
-		"ext-ldap": "*"
+		"ext-ldap": "*",
+		"ext-json": "*"
 	},
 	"platform-dev": []
 }

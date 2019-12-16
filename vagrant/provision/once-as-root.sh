@@ -44,7 +44,8 @@ echo mysql-community-server mysql-community-server/root-pass password '' | sudo 
 echo mysql-community-server mysql-community-server/re-root-pass password '' | sudo debconf-set-selections
 
 info_str "Install additional software"
-apt-get install -y php7.3-fpm php7.3-cli php7.3-curl php7.3-intl php7.3-mysqlnd php7.3-gd php7.3-mbstring php7.3-xml php7.3-ldap unzip nginx mysql-server php.xdebug bash-completion
+apt-get install -y bash-completion debconf-utils
+apt-get install -y php7.3-fpm php7.3-cli php7.3-curl php7.3-intl php7.3-mysqlnd php7.3-gd php7.3-mbstring php7.3-xml php7.3-ldap unzip nginx mysql-server php.xdebug
 apt-get autoremove -y
 
 info_str "Configure MySQL"
@@ -62,6 +63,9 @@ sed -i 's/owner = www-data/owner = vagrant/g' /etc/php/7.3/fpm/pool.d/www.conf
 sed -i -E 's/;access.log = .*/access.log = \/app\/vagrant\/nginx\/log\/fpm.access.log/g' /etc/php/7.3/fpm/pool.d/www.conf
 sed -i -E 's/;access.format = .*/access.format = "%R - %u %t \\"%m %r%Q%q\\" %s %f %{mili}d %{kilo}M %C%%"/g' /etc/php/7.3/fpm/pool.d/www.conf
 sed -i -E 's/;?error_log = .*/error_log = \/app\/vagrant\/nginx\/log\/fpm.error.log/g' /etc/php/7.3/fpm/php-fpm.conf
+sed -i -E 's/upload_max_filesize = .*/upload_max_filesize = 2g/g' /etc/php/7.3/fpm/php.ini
+sed -i -E 's/post_max_size = .*/post_max_size = 4g/g' /etc/php/7.3/fpm/php.ini
+
 cat <<EOF >/etc/php/7.3/mods-available/xdebug.ini
 zend_extension=xdebug.so
 xdebug.remote_enable=1

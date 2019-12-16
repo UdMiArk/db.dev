@@ -21,5 +21,21 @@ return [
 				'encryption' => 'tls',
 			],
 		],
+		'ad' => [
+			'defaultProvider' => '@db.dev',
+			'providers' => [
+				'@db.dev' => [
+					'autoconnect' => false,
+					'config' => [
+						'account_suffix' => '@db.dev',
+						'hosts' => ['DC1.db.dev', 'DC2.db.dev'],
+						'base_dn' => 'OU=users,OU=ORG,DC=db,DC=dev',
+
+						'username' => 'service-db',
+						'password' => 'somepass',
+					],
+				],
+			],
+		],
 	],
 ];

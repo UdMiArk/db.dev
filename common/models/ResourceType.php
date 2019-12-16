@@ -3,6 +3,7 @@
 namespace common\models;
 
 use common\components\CommonRecord;
+use common\components\FileStorageHelper;
 
 /**
  * ResourceType model
@@ -56,5 +57,56 @@ class ResourceType extends CommonRecord {
 			$result['attributes'] = $attributes;
 		}
 		return $result;
+	}
+
+	/**
+	 * @param array $data
+	 * @param bool $unprocessed
+	 * @param array $errors
+	 * @return bool
+	 */
+	public function validateResourceData($data, $unprocessed = false, &$errors = []) {
+		$foundErrors = false;
+
+		$fileNames = [FileStorageHelper::META_FILE_NAME => "Системные"];
+		foreach ($this->typeAttributes as $attribute) {
+			$attrErrors = [];
+			$attrData = @$data[$attribute->primaryKey];
+			if (!$attribute->validateResourceData($attrData, $unprocessed, $attrErrors)) {
+				$foundErrors = true;
+				if (empty($attrErrors)) {
+					$attrErrors = "Недопустимое значение";
+				}
+			} else if (!is_null($attrData)) {
+				$attrFileNames = $attribute->getFileNames($attrData, $unprocessed);
+				if ($attrFileNames) foreach ($attrFileNames as $fileName) {
+					if (array_key_exists($fileName, $fileNames)) {
+						$foundErrors = true;
+						$attrErrors [] = "Имя файла '" . $fileName . "' уже занято файлом поля '" . $fileNames[$fileName] . "'";
+					} else {
+						$fileNames[$fileName] = $attribute->name;
+					}
+				}
+			}
+			if ($attrErrors) {
+				$errors[$attribute->primaryKey] = $attrErrors;
+			}
+		}
+
+		return !$foundErrors;
+	}
+
+	/**
+	 * @param $data
+	 * @param Resource $resource
+	 * @return array
+	 * @throws \yii\base\Exception
+	 */
+	public function processResourceData($data, Resource $resource) {
+		$newData = [];
+		foreach ($this->typeAttributes as $attribute) {
+			$newData[$attribute->primaryKey] = $attribute->processResourceData(@$data[$attribute->primaryKey], $resource);
+		}
+		return $newData;
 	}
 }

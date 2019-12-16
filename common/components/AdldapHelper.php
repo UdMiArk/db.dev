@@ -16,6 +16,7 @@ class AdldapHelper {
 	 * @param Provider $provider
 	 *
 	 * @return User
+	 * @throws Exception
 	 */
 	public static function ensureUserExists($login, $domain, $provider) {
 		$user = User::findByLogin($login, $domain);
@@ -42,8 +43,10 @@ class AdldapHelper {
 		}
 
 		/* @var \Adldap\Models\User $data */
-		$user->email = $data->getEmail();
+		$user->email = $data->getEmail() ?? $data->getUserPrincipalName();
 		$user->name = $data->getDisplayName();
+
+		//file_put_contents(\Yii::getAlias('@runtime/ldap.json'), Json::encode($data->getAttributes(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE));
 
 		if ($user->isNewRecord || !empty($user->getDirtyAttributes())) {
 			if (!$user->save()) {

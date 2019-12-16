@@ -4,6 +4,8 @@ namespace common\models;
 
 use common\components\CommonRecord;
 use common\components\DateTimeStampBehavior;
+use common\components\FileStorageHelper;
+use common\data\EResourceStatus;
 use yii\helpers\Json;
 
 /**
@@ -32,6 +34,43 @@ use yii\helpers\Json;
  * @property-read ResourceType $type
  */
 class Resource extends CommonRecord {
+	const RBAC_ALL = 'app.resource.*';
+	const RBAC_CREATE = 'app.resource.create';
+	const RBAC_VIEW = 'app.resource.view';
+	const RBAC_UPDATE = 'app.resource.update';
+	const RBAC_DELETE = 'app.resource.delete';
+	const RBAC_APPROVE = 'app.resource.approve';
+	const RBAC_ARCHIVE = 'app.resource.archive';
+
+	public function init() {
+		parent::init();
+		$this->on($this::EVENT_AFTER_INSERT, [$this, 'evHandleInsert']);
+		$this->on($this::EVENT_AFTER_UPDATE, [$this, 'evHandleUpdate']);
+
+		$this->status = EResourceStatus::AWAITING;
+	}
+
+	public function generatePath() {
+		$result = $this->name;
+		if ($this->primaryKey) {
+			$result .= ' (id ' . $this->primaryKey . ')';
+		}
+		return '/' . FileStorageHelper::preparePath($result);
+	}
+
+	protected function evHandleInsert() {
+		$newPath = $this->generatePath();
+		if ($this->path !== $newPath) {
+			$this->path = $newPath;
+			$this->setOldAttribute('path', $newPath);
+			$this::updateAll(['path' => $newPath], ['id' => $this->primaryKey]);
+		}
+	}
+
+	protected function evHandleUpdate() {
+		FileStorageHelper::updateResourceMetaFile($this);
+	}
+
 	public function behaviors() {
 		return [
 			DateTimeStampBehavior::class,
@@ -112,4 +151,24 @@ class Resource extends CommonRecord {
 
 		return $result;
 	}
+
+	public function getRightsData() {
+		$result = [];
+
+		$user = \Yii::$app->user;
+
+		if ($this->status === EResourceStatus::AWAITING) {
+			if ($user->can($this::RBAC_APPROVE)) {
+				$result['canApprove'] = true;
+			}
+		} else {
+			if ($user->can($this::RBAC_ARCHIVE)) {
+				$result['canArchive'] = true;
+			}
+		}
+
+
+		return $result;
+	}
+
 }

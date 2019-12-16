@@ -16,5 +16,25 @@ return [
 			// for the mailer to send real emails.
 			'useFileTransport' => true,
 		],
+		'ad' => [
+			'defaultProvider' => '@db.dev',
+			'providers' => [
+				'@db.dev' => [
+					'autoconnect' => false,
+					'config' => [
+						'account_suffix' => '@db.dev',
+						'hosts' => ['db.dev'],
+						'base_dn' => 'dc=db,dc=dev',
+
+						//'username' => '',
+						//'password' => '',
+
+						//'port' => 636,
+						//'use_ssl' => true,
+						//'use_tls' => true,
+					],
+				],
+			],
+		],
 	],
 ];
