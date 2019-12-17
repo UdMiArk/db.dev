@@ -23,12 +23,14 @@
 					permissions = this.permissions;
 				if (permissions.canViewResources) {
 					result.push(Object.freeze({
+						icon: "database-search",
 						label: "Ресурсы",
 						route: {name: "resourcesList"}
 					}));
 				}
 				if (permissions.canManageUsers) {
 					result.push(Object.freeze({
+						icon: "account-group",
 						label: "Пользователи",
 						route: {name: "usersList"}
 					}));

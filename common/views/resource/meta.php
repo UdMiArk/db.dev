@@ -1,4 +1,4 @@
-<?php
+<?php /*@formatter:off*/
 /**
  * @var \common\models\Resource $resource
  * @var \yii\base\View $this
@@ -26,14 +26,15 @@ $market = $product->market;
 Статус: <?= \common\data\EResourceStatus::getCaption($resource->status) ?>
 
 <?php if ($resource->status_at) { ?>
-	Дата выставления статуса: <?= $resource->status_at ?>
+Дата выставления статуса: <?= $resource->status_at ?>
 <?php } ?>
+
 
 Создатель: <?= $resource->user->name ?>
 
 Создано: <?= $resource->created_at ?>
 
-<?php if ($resource->comment) { /*@formatter:off*/ ?>
+<?php if ($resource->comment) { ?>
 Комментарий: #############
 	<?= implode("\n\t", explode("\n", $resource->comment)) ?>
 

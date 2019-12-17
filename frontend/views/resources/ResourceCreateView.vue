@@ -13,16 +13,14 @@
 
 <script>
 	import BaseViewContainer from "@components/BaseViewContainer";
-	import BaseForm from "@components/form/BaseForm";
 	import Loader from "@components/Loader";
 	import ScAuthForm from "@components/actions/ScAuthForm";
 	import {deepFreeze} from "@/plugins/object";
-	import AutocompleteSelectField from "@components/form/AutocompleteSelectField";
 	import ResourceCreateForm from "@components/actions/resources/CreateForm";
 
 	export default {
 		name: "ResourceCreateView",
-		components: {ResourceCreateForm, AutocompleteSelectField, Loader, BaseForm, BaseViewContainer, ScAuthForm},
+		components: {ResourceCreateForm, Loader, BaseViewContainer, ScAuthForm},
 		data() {
 			return {
 				creationData: null,
@@ -53,7 +51,7 @@
 				this.creationData = data;
 			},
 			handleCreationSuccess(data) {
-				this.$router.replace({name: "resourceView", params: {qPk: data.__id}});
+				this.$router.replace({name: "resourceView", params: {qPk: data.__id.toString()}});
 			}
 		},
 		created() {

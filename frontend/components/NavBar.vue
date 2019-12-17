@@ -10,10 +10,19 @@
 		</template>
 		<template #start v-if="navItems && navItems.length">
 			<template v-for="item in navItems">
-				<b-navbar-dropdown :key="item.label" :label="item.label" v-if="item.children">
-					<b-navbar-item :href="item.href" :tag="item.route ? 'router-link' : undefined" :to="item.route">{{item.label}}</b-navbar-item>
+				<b-navbar-dropdown :key="item.label" v-if="item.children">
+					<template #label>
+						<b-icon :icon="item.icon" class="mr-xs" v-if="item.icon"/>
+						<span> {{item.label}}</span></template>
+					<b-navbar-item :href="subitem.href" :tag="subitem.route ? 'router-link' : undefined" :to="subitem.route" v-for="subitem in item.children">
+						<b-icon :icon="subitem.icon" class="mr-xs" v-if="subitem.icon"/>
+						<span> {{subitem.label}}</span>
+					</b-navbar-item>
 				</b-navbar-dropdown>
-				<b-navbar-item :href="item.href" :key="item.label" :tag="item.route ? 'router-link' : undefined" :to="item.route" v-else>{{item.label}}</b-navbar-item>
+				<b-navbar-item :active="isActive(item)" :href="item.href" :key="item.label" :tag="item.route ? 'router-link' : undefined" :to="item.route" v-else>
+					<b-icon :icon="item.icon" class="mr-xs" v-if="item.icon"/>
+					<span> {{item.label}}</span>
+				</b-navbar-item>
 			</template>
 		</template>
 		<template #end v-if="isLoggedIn">
@@ -29,7 +38,7 @@
 	export default {
 		name: "NavBar",
 		props: {
-			brand: String,
+			brand: Object,
 			navItems: Array
 		},
 		computed: {
@@ -47,6 +56,9 @@
 						this.$router.push({name: "home"});
 					})
 					.catch(this.$handleErrorWithBuefy);
+			},
+			isActive(item) {
+				return item.route && item.route.name === this.$route.name;
 			},
 			doLogout() {
 				return this.$apiPostJ("auth/logout");

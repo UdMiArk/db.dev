@@ -1,12 +1,12 @@
 <template>
 	<BaseViewContainer>
 		<div class="box is-warning" v-if="error">{{error.message || error}}</div>
-		<Loader v-else-if="resource === null"/>
-		<ResourceDisplay :data="resource" ref="display" v-else>
+		<Loader v-else-if="item === null"/>
+		<ResourceDisplay :data="item" ref="display" v-else>
 			<template #footer v-if="canDoActions">
 				<div class="has-text-right">
-					<b-button @click="handleSendToArchive" v-if="canSendToArchive">Отправить в архив</b-button>
-					<b-button @click="handleReturnFromArchive" v-if="canReturnFromArchive">Вернуть из архива</b-button>
+					<b-button @click="sendToArchive" v-if="canSendToArchive">Отправить в архив</b-button>
+					<b-button @click="returnFromArchive" v-if="canReturnFromArchive">Вернуть из архива</b-button>
 					<template v-if="canApprove">
 						<b-button @click="setResourceStatus(false)" type="is-warning">Отклонить</b-button>
 						<b-button @click="setResourceStatus(true)" type="is-primary ml-sm">Утвердить</b-button>
@@ -32,7 +32,7 @@
 		},
 		data() {
 			return {
-				resource: null,
+				item: null,
 				error: null
 			};
 		},
@@ -52,12 +52,12 @@
 			}
 		},
 		methods: {
-			reloadResource() {
+			reloadItem() {
 				this.error = null;
-				this.resource = null;
+				this.item = null;
 				return (
 					this.$apiGetJ("resources/view/" + this.qPk)
-						.then(({data}) => this.resource = deepFreeze(data))
+						.then(({data}) => this.item = deepFreeze(data))
 						.catch(err => {
 							this.error = err;
 							this.$handleErrorWithBuefy(err);
@@ -71,7 +71,7 @@
 					this.$apiPostJ("resources/set-status/" + this.qPk, {approved: approved})
 						.then(({data}) => {
 							if (data.success) {
-								this.resource = deepFreeze(data.resource);
+								this.item = deepFreeze(data.resource);
 							} else {
 								throw new Error(data.error || "Не удалось прочитать ответ сервера");
 							}
@@ -86,7 +86,7 @@
 					this.$apiPostJ("resources/archive/" + this.qPk)
 						.then(({data}) => {
 							if (data.success) {
-								this.resource = deepFreeze(data.resource);
+								this.item = deepFreeze(data.resource);
 							} else {
 								throw new Error(data.error || "Не удалось прочитать ответ сервера");
 							}
@@ -101,7 +101,7 @@
 					this.$apiPostJ("resources/dearchive/" + this.qPk)
 						.then(({data}) => {
 							if (data.success) {
-								this.resource = deepFreeze(data.resource);
+								this.item = deepFreeze(data.resource);
 							} else {
 								throw new Error(data.error || "Не удалось прочитать ответ сервера");
 							}
@@ -112,7 +112,7 @@
 			}
 		},
 		created() {
-			this.reloadResource();
+			this.reloadItem();
 		}
 
 	};

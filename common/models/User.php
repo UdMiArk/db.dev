@@ -23,6 +23,8 @@ use yii\web\IdentityInterface;
  * @property integer $status
  */
 class User extends CommonRecord implements IdentityInterface {
+	const RBAC_MANAGE = 'app.user.manage';
+
 	public function attributeLabels() {
 		return [
 			'created_at' => "Дата регистрации",
@@ -40,11 +42,20 @@ class User extends CommonRecord implements IdentityInterface {
 		];
 	}
 
-	public function getFrontendInfo() {
-		return array_merge(parent::getFrontendInfo(), [
+	public function getFrontendInfo($extendedInfo = false) {
+		$result = array_merge(parent::getFrontendInfo(), [
 			'name' => $this->name,
 			'email' => $this->email,
 		]);
+		if ($extendedInfo) {
+			$result = array_merge($result, [
+				'login' => $this->login,
+				'domain' => $this->domain,
+				'status' => $this->status,
+				'created_at' => $this->created_at,
+			]);
+		}
+		return $result;
 	}
 
 	/**

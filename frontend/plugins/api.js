@@ -138,6 +138,7 @@ export default Object.freeze({
 					newBody = "";
 				}
 				if (isJson) {
+					newBody = Object.assign({}, newBody);
 					newBody[CSRF_TOKEN_PROP] = csrfToken;
 				} else if (typeof newBody === "string") {
 					newBody =

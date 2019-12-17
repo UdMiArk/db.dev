@@ -47,6 +47,9 @@ class Resource extends CommonRecord {
 		$this->on($this::EVENT_AFTER_INSERT, [$this, 'evHandleInsert']);
 		$this->on($this::EVENT_AFTER_UPDATE, [$this, 'evHandleUpdate']);
 
+		$this->on($this::EVENT_BEFORE_INSERT, [$this, 'evHandleBeforeInsert']);
+		$this->on($this::EVENT_BEFORE_UPDATE, [$this, 'evHandleBeforeUpdate']);
+
 		$this->status = EResourceStatus::AWAITING;
 	}
 
@@ -69,6 +72,24 @@ class Resource extends CommonRecord {
 
 	protected function evHandleUpdate() {
 		FileStorageHelper::updateResourceMetaFile($this);
+	}
+
+	protected function evHandleBeforeInsert() {
+		$this->_checkStatusChange();
+	}
+
+	protected function evHandleBeforeUpdate() {
+		$this->_checkStatusChange();
+	}
+
+	protected function _checkStatusChange() {
+		if ($this->isAttributeChanged('status')) {
+			if ($this->status !== EResourceStatus::AWAITING) {
+				$this->status_at = date('Y-m-d H:i:s', time());
+			} else {
+				$this->status_at = null;
+			}
+		}
 	}
 
 	public function behaviors() {

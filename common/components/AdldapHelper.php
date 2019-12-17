@@ -55,6 +55,18 @@ class AdldapHelper {
 		}
 	}
 
+	public static function searchUserLdapDataDataByLogin($login, Provider $provider) {
+		if (!$provider->getConnection()->isBound()) {
+			$provider->auth()->bindAsAdministrator();
+		}
+		$data = $provider->search()->where('sAMAccountname', '=', $login)->get();
+		if (count($data)) {
+			return $data[0];
+		} else {
+			return null;
+		}
+	}
+
 	/**
 	 * @param User $user
 	 * @param Provider $provider
@@ -62,11 +74,6 @@ class AdldapHelper {
 	 * @return \Adldap\Models\User
 	 */
 	public static function getUserLdapData(User $user, Provider $provider) {
-		$data = $provider->search()->where('sAMAccountname', '=', $user->login)->get();
-		if (count($data)) {
-			return $data[0];
-		} else {
-			return null;
-		}
+		return static::searchUserLdapDataDataByLogin($user->login, $provider);
 	}
 }

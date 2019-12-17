@@ -64,10 +64,10 @@ class AuthController extends BackendController {
 	protected function _prepareAuthData(\yii\web\User $user) {
 		$result = [
 			'csrfToken' => $this->request->getCsrfToken(),
+			'domains' => (new FormLogin())->getAvailableProviders(),
 		];
 		if ($user->isGuest) {
 			$result['authenticated'] = false;
-			$result['domains'] = (new FormLogin())->getAvailableProviders();
 		} else {
 			/* @var User $identity */
 			$identity = $user->identity;

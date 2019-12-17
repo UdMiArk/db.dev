@@ -269,7 +269,7 @@ class ResourcesController extends BackendController {
 
 	protected function _prepareResourceData(Resource $resource) {
 		$result = $resource->getFrontendInfo(true, true, true);
-		array_merge($result, $resource->getRightsData());
+		$result = array_merge($result, $resource->getRightsData());
 		return $result;
 	}
 }

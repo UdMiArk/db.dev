@@ -26,17 +26,17 @@ export function formatServerDate(date, withTime = false) {
  * @return {Date}
  */
 export function parseServerDate(date) {
-	return dateParse(
+	return date ? dateParse(
 		date,
 		date.includes(TIMED_FORMAT_CHECK)
 			? SERVER_FORMAT
 			: SERVER_FORMAT_NO_TIME,
 		today()
-	);
+	) : null;
 }
 
 export function formatDate(date) {
-	return dateFormat(date, "dd.MM.yyyy");
+	return date ? dateFormat(date, "dd.MM.yyyy") : null;
 }
 
 export function formatDateTime(date) {

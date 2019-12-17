@@ -82,7 +82,7 @@
 			actualFilters() {
 				const result = {};
 				if (this.manualFilters) {
-					Object.apply(result, this.manualFilters);
+					Object.assign(result, this.manualFilters);
 				}
 				if (this.activeMenuItem) {
 					const item = this.activeMenuItem;

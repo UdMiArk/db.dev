@@ -47,7 +47,7 @@
 			sourceParams() {
 				const result = {};
 				if (this.additionalSourceParams) {
-					Object.apply(result, this.additionalSourceParams);
+					Object.assign(result, this.additionalSourceParams);
 				}
 				if (this.page) {
 					result.page = this.page;

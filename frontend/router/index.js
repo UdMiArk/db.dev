@@ -2,6 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import RoutesAuth from "./routes-auth";
 import RoutesResources from "./routes-resources";
+import RoutesUsers from "./routes-users";
 import HomeView from "@views/HomeView";
 import NotFoundView from "@views/NotFoundView";
 
@@ -15,6 +16,7 @@ const routes = [
 	},
 	...RoutesAuth,
 	...RoutesResources,
+	...RoutesUsers,
 	{
 		path: "*",
 		name: "notFound",
