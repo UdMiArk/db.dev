@@ -78,8 +78,9 @@ class ResourcesController extends BackendController {
 		return $this->asJson(Market::cachedAll());
 	}
 
-	public function actionStructure() {
-		return $this->asJson(Product::cachedStructure());
+	public function actionStructure($only_mine = false) {
+		$only_mine = boolval(intval($only_mine));
+		return $this->asJson(Product::cachedStructure($only_mine ? $this->user : null));
 	}
 
 	public function actionScLogin() {
@@ -107,7 +108,7 @@ class ResourcesController extends BackendController {
 		$listProcessor = new ListRequestProcessor();
 
 		$listProcessor->sortingHandlers = [
-			'product' => function ($query, $attr, $dir) {
+			'product' => function ($query, $dir) {
 				/* @var \yii\db\Query $query */
 				$query->orderBy(['product.name' => $dir]);
 			},
@@ -115,9 +116,21 @@ class ResourcesController extends BackendController {
 		$listProcessor->filterHandlers = [
 			'product' => function ($query, $value) {
 				/* @var \yii\db\Query $query */
+				$query->andWhere(['like', 'product.name', $value]);
+			},
+			'user' => function ($query, $value) {
+				/* @var \yii\db\Query $query */
+				$query->andWhere(['or', ['like', 'user.name', $value], ['like', 'user.email', $value]]);
+			},
+			'type' => function ($query, $value) {
+				/* @var \yii\db\Query $query */
+				$query->andWhere(['like', 'type.name', $value]);
+			},
+			'product_id' => function ($query, $value) {
+				/* @var \yii\db\Query $query */
 				$query->andWhere(['resource.product_id' => $value]);
 			},
-			'market' => function ($query, $value) {
+			'market_id' => function ($query, $value) {
 				/* @var \yii\db\Query $query */
 				$query->andWhere(['product.market_id' => $value]);
 			},

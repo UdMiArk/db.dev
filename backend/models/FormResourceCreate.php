@@ -7,6 +7,7 @@ use common\components\Adldap2Wrapper;
 use common\components\FileStorageHelper;
 use common\components\FormModel;
 use common\components\ProductAccessibilityHelper;
+use common\data\EResourceStatus;
 use common\models\Market;
 use common\models\Product;
 use common\models\Resource;
@@ -156,6 +157,9 @@ class FormResourceCreate extends FormModel {
 			$resource->name = $this->name;
 			$resource->comment = $this->comment;
 			$resource->path = $resource->generatePath();
+			if (\Yii::$app->authManager->checkAccess($resource->user_id, $resource::RBAC_APPROVE)) {
+				$resource->status = EResourceStatus::APPROVED;
+			}
 
 			if (!$resource->save()) {
 				$this->addErrors($resource->getErrors());

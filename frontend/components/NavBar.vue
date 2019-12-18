@@ -14,7 +14,7 @@
 					<template #label>
 						<b-icon :icon="item.icon" class="mr-xs" v-if="item.icon"/>
 						<span> {{item.label}}</span></template>
-					<b-navbar-item :href="subitem.href" :tag="subitem.route ? 'router-link' : undefined" :to="subitem.route" v-for="subitem in item.children">
+					<b-navbar-item :href="subitem.href" :key="subitem.label" :tag="subitem.route ? 'router-link' : undefined" :to="subitem.route" v-for="subitem in item.children">
 						<b-icon :icon="subitem.icon" class="mr-xs" v-if="subitem.icon"/>
 						<span> {{subitem.label}}</span>
 					</b-navbar-item>

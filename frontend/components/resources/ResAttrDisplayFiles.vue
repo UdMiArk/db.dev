@@ -1,11 +1,10 @@
 <template>
 	<b-field :label="label">
-		<div class="input">
-			<ul v-if="data && data.length">
-				<li v-for="file in data">
-					<a :href="getFileLink(file)" class="component" download target="_blank">{{file.name}}</a></li>
-			</ul>
-		</div>
+		<ul class="list" v-if="value && value.length">
+			<li class="list-item" v-for="file in value">
+				<a :href="getFileLink(file)" class="component" download target="_blank">{{file.name}}</a>
+			</li>
+		</ul>
 	</b-field>
 </template>
 
@@ -16,7 +15,7 @@
 		name: "ResAttrDisplayFiles",
 		props: {
 			label: String,
-			value: {},
+			value: Array,
 			resource: Object
 		},
 		methods: {

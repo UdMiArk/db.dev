@@ -22,8 +22,8 @@
 	>
 		<template #default="{row}">
 			<b-table-column field="created_at" label="Добавлен" sortable width="100">{{row.created_at | parseDate | date}}</b-table-column>
-			<b-table-column field="user" label="Создатель" v-if="withUser">{{row.user.name}}</b-table-column>
-			<b-table-column field="product" label="Объект продвижения" sortable>{{row.product.name}}</b-table-column>
+			<b-table-column :visible="withUser" field="user" label="Создатель">{{row.user.name}}</b-table-column>
+			<b-table-column :visible="withProduct" field="product" label="Объект продвижения" sortable>{{row.product.name}}</b-table-column>
 			<b-table-column field="type" label="Тип">{{row.type.name}}</b-table-column>
 			<b-table-column field="name" label="Название" sortable>{{row.name}}</b-table-column>
 			<b-table-column centered field="status" label="Статус" sortable width="65">
@@ -34,8 +34,11 @@
 			</b-table-column>
 		</template>
 		<template #empty>
-			<slot name="empty" v-if="$slots.empty"/>
-			<div v-else>Под ваш запрос ресурсов в базе не найдено</div>
+			<slot name="empty">
+				<div v-if="loading">Идет загрузка..</div>
+				<div v-else-if="total">На текущей странице данных нет</div>
+				<div v-else>Под ваш запрос пользователей в базе не найдено. Возможно они ещё ни разу не аутентифицировались в приложении</div>
+			</slot>
 		</template>
 	</b-table>
 </template>
@@ -51,6 +54,7 @@
 				type: Array
 			},
 			withUser: Boolean,
+			withProduct: Boolean,
 			backendSorting: Boolean,
 			backendPagination: Boolean,
 			total: Number,

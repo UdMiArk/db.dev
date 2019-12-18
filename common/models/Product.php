@@ -52,22 +52,34 @@ class Product extends CommonRecord {
 		return $this->hasOne(Market::class, ['id' => 'market_id']);
 	}
 
-	public static function cachedStructure() {
+	public static function cachedStructure(User $user = null) {
 		$productsByMarket = [];
-		foreach (
-			static::find()
-				->select(['__id' => 'id', 'id_ext', 'name', 'market_id'])
-				->orderBy(['name' => SORT_ASC])->asArray()
-				->each(1000)
-			as $row
-		) {
+		$prodQuery = static::find()->alias('product')
+			->select(['__id' => 'id', 'id_ext', 'name', 'market_id'])
+			->orderBy(['name' => SORT_ASC]);
+		if ($user) {
+			$prodQuery->innerJoin(
+				[
+					'_flt_user' => Resource::find()
+						->andWhere(['user_id' => $user->primaryKey])
+						->select(['product_id'])->distinct(),
+				],
+				'`_flt_user`.`product_id` = `product`.`id`'
+			);
+		}
+		foreach ($prodQuery->asArray()->each(1000) as $row) {
 			$row['id'] = 'p' . $row['__id'];
 			$productsByMarket[$row['market_id']] [] = $row;
 		}
-		$result = Market::cachedAll();
-		foreach ($result as &$market) {
-			$market['id'] = 'm' . $market['__id'];
-			$market['products'] = @$productsByMarket[$market['__id']];
+		$markets = Market::cachedAll();
+		$result = [];
+		foreach ($markets as $market) {
+			$marketProducts = @$productsByMarket[$market['__id']];
+			if ($marketProducts || !$user) {
+				$market['id'] = 'm' . $market['__id'];
+				$market['products'] = @$productsByMarket[$market['__id']];
+				$result[] = $market;
+			}
 		}
 		return $result;
 	}

@@ -91,12 +91,14 @@
 		methods: {
 			setFilterValue(prop, val) {
 				const newFiler = this.manualFilters ? Object.assign({}, this.manualFilters) : {};
-				if (val) {
-					newFiler[prop] = val;
-				} else {
-					delete newFiler[prop];
+				if ((val || "") !== (newFiler[prop] || "")) {
+					if (val) {
+						newFiler[prop] = val;
+					} else {
+						delete newFiler[prop];
+					}
+					this.manualFilters = Object.keys(newFiler).length ? Object.freeze(newFiler) : null;
 				}
-				this.manualFilters = Object.keys(newFiler).length ? Object.freeze(newFiler) : null;
 			},
 			reloadStructure() {
 				this.structure = null;

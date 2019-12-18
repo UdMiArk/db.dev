@@ -115,7 +115,7 @@ class ListRequestProcessor {
 			if ($this->sortingHandlers && count($sorting) === 1 && array_key_exists(array_keys($sorting)[0], $this->sortingHandlers)) {
 				$attr = array_keys($sorting)[0];
 				$dir = $sorting[$attr];
-				call_user_func($this->sortingHandlers[$attr], $query, $attr, $dir, $this);
+				call_user_func($this->sortingHandlers[$attr], $query, $dir, $attr, $this);
 			} elseif (!$this->sortingOnlyByHandlers) {
 				$query->orderBy($sorting);
 			}

@@ -33,7 +33,8 @@
 			page: Number,
 			pageSize: Number,
 			additionalSourceParams: Object,
-			keepDataOnError: Boolean
+			keepDataOnError: Boolean,
+			preventUpdate: Boolean
 		},
 		data() {
 			return {
@@ -69,6 +70,10 @@
 		},
 		methods: {
 			reloadData() {
+				if (this.preventUpdate) {
+					this._updatePrevented = true;
+					return;
+				}
 				this.error = null;
 				this.isLoading = true;
 				const request = this.$lastRequest = this.$apiGet(this.source, this.sourceParams);
@@ -105,6 +110,12 @@
 		watch: {
 			sourceParams() {
 				this.reloadData();
+			},
+			preventUpdate(val) {
+				if (!val && this._updatePrevented) {
+					this._updatePrevented = false;
+					this.reloadData();
+				}
 			}
 		},
 		created() {
