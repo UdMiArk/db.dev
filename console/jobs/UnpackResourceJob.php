@@ -34,6 +34,7 @@ class UnpackResourceJob extends BaseObject implements RetryableJobInterface {
 			$resource->archived = EArchiveStatus::NOT_ARCHIVED;
 			$resource->archived_at = null;
 			$resource->archived_by = null;
+			$resource->archived_queue = null;
 			FileStorageHelper::unpackResourceBucket($resource, function () use ($resource) {
 				if (!$resource->save()) {
 					throw new Exception("Не удалось сохранить ресурс после распаковки: " . $resource->getFirstError());

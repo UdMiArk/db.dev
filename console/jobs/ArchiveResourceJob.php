@@ -32,6 +32,7 @@ class ArchiveResourceJob extends BaseObject implements RetryableJobInterface {
 		$this->validateResource($resource);
 		try {
 			$resource->archived = EArchiveStatus::ARCHIVED;
+			$resource->archived_queue = null;
 			FileStorageHelper::archiveResourceBucket($resource, function () use ($resource) {
 				if (!$resource->save()) {
 					throw new Exception("Не удалось сохранить ресурс после архивации: " . $resource->getFirstError());

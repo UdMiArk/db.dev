@@ -23,6 +23,8 @@ use yii\helpers\Json;
  * @property string $status_at
  * @property string $archived_at
  *
+ * @property string $archived_queue
+ *
  * @property array $data
  * @property string $data_json
  *
@@ -177,6 +179,7 @@ class Resource extends CommonRecord {
 			'status_at' => $this->updated_at,
 			'archived_at' => $this->archived_at,
 			'archived_by' => $this->archived_by,
+			'archived_queue' => $this->archived_queue,
 			'name' => $this->name,
 			'status' => $this->status,
 			'archived' => $this->archived,

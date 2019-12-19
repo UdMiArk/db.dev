@@ -238,12 +238,13 @@ class ResourcesController extends BackendController {
 		$resource->archived_at = date('Y-m-d H:i:s', time());
 		$trans = \Yii::$app->db->beginTransaction();
 		try {
-			if (!$resource->update()) {
-				throw new BadRequestHttpException($resource->getFirstError());
-			}
 			$queueId = $this->getQueue()->push(new ArchiveResourceJob([
 				'resource_id' => $resource->primaryKey,
 			]));
+			$resource->archived_queue = $queueId;
+			if (!$resource->update()) {
+				throw new BadRequestHttpException($resource->getFirstError());
+			}
 			$trans->commit();
 		} catch (\Throwable $e) {
 			$trans->rollBack();
@@ -264,12 +265,13 @@ class ResourcesController extends BackendController {
 		$resource->archived = EArchiveStatus::AWAITING_DEARCHIVATION;
 		$trans = \Yii::$app->db->beginTransaction();
 		try {
-			if (!$resource->update()) {
-				throw new BadRequestHttpException($resource->getFirstError());
-			}
 			$queueId = $this->getQueue()->push(new UnpackResourceJob([
 				'resource_id' => $resource->primaryKey,
 			]));
+			$resource->archived_queue = $queueId;
+			if (!$resource->update()) {
+				throw new BadRequestHttpException($resource->getFirstError());
+			}
 			$trans->commit();
 		} catch (\Throwable $e) {
 			$trans->rollBack();

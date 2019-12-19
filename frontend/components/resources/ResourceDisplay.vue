@@ -60,6 +60,9 @@
 			<template v-if="archivedData">
 				<div class="box has-background-warning" v-if="awaitingArchivation">
 					В данный момент ресурс находится в просессе архивации/деархивации и его хранилище не доступно
+					<div class="has-text-centered pt-md" v-if="data.archived_queue">
+						<b-button @click="$emit('startWaiting')">Перезагрузить страницу после готовности</b-button>
+					</div>
 				</div>
 				<div class="box has-background-light" v-else>
 					Ресурс находится в архиве.

@@ -2,7 +2,7 @@
 	<BaseViewContainer>
 		<div class="box is-warning" v-if="error">{{error.message || error}}</div>
 		<Loader v-else-if="item === null"/>
-		<ResourceDisplay :data="item" ref="display" v-else>
+		<ResourceDisplay :data="item" @startWaiting="showArchivationProcess(item.archived_queue)" ref="display" v-else>
 			<template #footer v-if="canDoActions">
 				<div class="has-text-right">
 					<b-button @click="sendToArchive" v-if="canSendToArchive">Отправить в архив</b-button>
@@ -21,7 +21,7 @@
 					Был запущен процесс архивации/распаковки ресурса.<br/>
 					Этот процесс может занять продолжительное время (зависит от размера файлов и загруженности сервера).<br/>
 					В течении этого периода файлы ресурса недоступны для скачивания.<br/>
-					Вы можете покинуть страницу или закрыть отображение процесса щелкнув по нему, это не затронет процесс на сервере.<br/>
+					<b>Вы можете покинуть страницу или закрыть отображение процесса</b> щелкнув по нему, это не затронет процесс на сервере.<br/>
 					Или вы можете дождаться автоматической перезагрузки данных после того как сервер отрапартует о завершении.<br/>
 				</p>
 				<div class="loading-icon" style="height: 120px"/>
