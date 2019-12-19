@@ -5,6 +5,7 @@ namespace common\models;
 use common\components\CommonRecord;
 use common\components\DateTimeStampBehavior;
 use common\components\FileStorageHelper;
+use common\data\EArchiveStatus;
 use common\data\EResourceStatus;
 use yii\helpers\Json;
 
@@ -13,23 +14,26 @@ use yii\helpers\Json;
  *
  * @property integer $id
  * @property integer $user_id
+ * @property integer $archived_by
  * @property integer $product_id
  * @property integer $type_id
  *
  * @property string $created_at
  * @property string $updated_at
  * @property string $status_at
+ * @property string $archived_at
  *
  * @property array $data
  * @property string $data_json
  *
  * @property string $name
  * @property integer $status
- * @property boolean $archived
+ * @property integer $archived
  * @property string $path
  * @property string $comment
  *
  * @property-read User $user
+ * @property-read User $archivedBy
  * @property-read Product $product
  * @property-read ResourceType $type
  */
@@ -71,7 +75,10 @@ class Resource extends CommonRecord {
 	}
 
 	protected function evHandleUpdate() {
-		FileStorageHelper::updateResourceMetaFile($this);
+		$archived = $this->archived;
+		if (!in_array($archived, [EArchiveStatus::AWAITING_DEARCHIVATION, EArchiveStatus::ARCHIVED])) {
+			FileStorageHelper::updateResourceMetaFile($this);
+		}
 	}
 
 	protected function evHandleBeforeInsert() {
@@ -88,6 +95,16 @@ class Resource extends CommonRecord {
 				$this->status_at = date('Y-m-d H:i:s', time());
 			} else {
 				$this->status_at = null;
+			}
+		}
+		if ($this->isAttributeChanged('archived')) {
+			switch (intval($this->archived)) {
+				case EArchiveStatus::NOT_ARCHIVED:
+					$this->archived_at = null;
+					break;
+				case EArchiveStatus::ARCHIVED:
+					$this->archived_at = date('Y-m-d H:i:s', time());
+					break;
 			}
 		}
 	}
@@ -107,6 +124,7 @@ class Resource extends CommonRecord {
 			'created_at' => "Дата создания",
 			'updated_at' => "Дата последнего изменения",
 			'status_at' => "Дата утверждения",
+			'archived_at' => "Дата архивации",
 
 			'data' => "Данные",
 			'name' => "Имя",
@@ -140,6 +158,10 @@ class Resource extends CommonRecord {
 		return $this->hasOne(User::class, ['id' => 'user_id']);
 	}
 
+	public function getArchivedBy() {
+		return $this->hasOne(User::class, ['id' => 'archived_by']);
+	}
+
 	public function getProduct() {
 		return $this->hasOne(Product::class, ['id' => 'product_id']);
 	}
@@ -153,6 +175,8 @@ class Resource extends CommonRecord {
 			'created_at' => $this->created_at,
 			'updated_at' => $this->updated_at,
 			'status_at' => $this->updated_at,
+			'archived_at' => $this->archived_at,
+			'archived_by' => $this->archived_by,
 			'name' => $this->name,
 			'status' => $this->status,
 			'archived' => $this->archived,
@@ -183,7 +207,7 @@ class Resource extends CommonRecord {
 				$result['canApprove'] = true;
 			}
 		} else {
-			if ($user->can($this::RBAC_ARCHIVE)) {
+			if (in_array($this->archived, [EArchiveStatus::ARCHIVED, EArchiveStatus::NOT_ARCHIVED]) && $user->can($this::RBAC_ARCHIVE)) {
 				$result['canArchive'] = true;
 			}
 		}

@@ -1,0 +1,14 @@
+[Unit]
+Description=Yii Queue Worker for DB.DEV #%I
+After=network.target
+After=mysql.service
+Requires=mysql.service
+
+[Service]
+User=vagrant
+Group=vagrant
+ExecStart=/app/yii queue/listen --verbose
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

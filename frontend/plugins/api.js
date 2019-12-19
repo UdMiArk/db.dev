@@ -19,6 +19,10 @@ export function getApiResourceFileLink(fileData, resourceId, inline = false) {
 	);
 }
 
+export function getApiResourceArchiveLink(resourceId) {
+	return getApiUrl("storage/resource-archive/" + resourceId);
+}
+
 export function apiFetch(uri, method, query, data, isJson) {
 	let url = getApiUrl(uri, query),
 		options = {

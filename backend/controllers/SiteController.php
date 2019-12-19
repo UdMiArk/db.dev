@@ -34,4 +34,14 @@ class SiteController extends BackendController {
 			'app' => 'backend',
 		]);
 	}
+
+	public function actionQueueStatus($id) {
+		return $this->asJson([
+			'status' => $this->queue->status($id),
+		]);
+	}
+
+	public function actionInfo() {
+		phpinfo();
+	}
 }

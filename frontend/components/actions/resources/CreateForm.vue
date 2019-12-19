@@ -1,5 +1,5 @@
 <template>
-	<BaseForm #default="{props}" :data="defaultValues" :locked="processing" :watchers="formWatchers" @submit="handleSubmit" class="app-form card">
+	<BaseForm #default="{props}" :data="defaultValues" :locked="processing" :watchers="formWatchers" @submit="handleSubmit" class="app-form card" ref="display">
 		<header class="card-header">
 			<span class="card-header-title">Добавление ресурса</span>
 		</header>
@@ -179,6 +179,7 @@
 		},
 		methods: {
 			handleSubmit({changes}) {
+				const processDisplay = this.$buefy.loading.open({container: this.$refs.display?.$el || this.$el});
 				this.processing = true;
 				this.errors = undefined;
 				this.$apiPostJ("resources/create", jsonToFormData(changes))
@@ -192,7 +193,7 @@
 						}
 					})
 					.catch(this.$handleErrorWithBuefy)
-					.finally(() => this.processing = false);
+					.finally(() => (this.processing = false, processDisplay.close()));
 			},
 			getResourceType(typeId) {
 				return this.creationData.resourceTypes.find(x => x.__id === typeId);

@@ -41,6 +41,11 @@ function getEnumLabel(value, enumObj, nullValue = null) {
 	return data == null ? nullValue : data.label;
 }
 
+function getEnumIcon(value, enumObj, nullValue = null) {
+	const data = getEnumData(value, enumObj);
+	return data?.icon || nullValue;
+}
+
 export function getReadableSize(bytes) {
 	const power = Math.floor(Math.log(bytes) / Math.log(1024)),
 		sizes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
@@ -50,4 +55,5 @@ export function getReadableSize(bytes) {
 
 Vue.filter("enumData", getEnumData);
 Vue.filter("enumLabel", getEnumLabel);
+Vue.filter("enumIcon", getEnumIcon);
 Vue.filter("fileSize", getReadableSize);

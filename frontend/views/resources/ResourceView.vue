@@ -14,6 +14,19 @@
 				</div>
 			</template>
 		</ResourceDisplay>
+		<b-loading :active.sync="archivationInProcess" can-cancel>
+			<div class="box has-text-centered" style="z-index: 1">
+				<b-button @click="archivationInProcess = false" class="is-pulled-right" icon-left="close"/>
+				<p>
+					Был запущен процесс архивации/распаковки ресурса.<br/>
+					Этот процесс может занять продолжительное время (зависит от размера файлов и загруженности сервера).<br/>
+					В течении этого периода файлы ресурса недоступны для скачивания.<br/>
+					Вы можете покинуть страницу или закрыть отображение процесса щелкнув по нему, это не затронет процесс на сервере.<br/>
+					Или вы можете дождаться автоматической перезагрузки данных после того как сервер отрапартует о завершении.<br/>
+				</p>
+				<div class="loading-icon" style="height: 120px"/>
+			</div>
+		</b-loading>
 	</BaseViewContainer>
 </template>
 
@@ -33,7 +46,8 @@
 		data() {
 			return {
 				item: null,
-				error: null
+				error: null,
+				archivationInProcess: false
 			};
 		},
 		computed: {
@@ -87,6 +101,7 @@
 						.then(({data}) => {
 							if (data.success) {
 								this.item = deepFreeze(data.resource);
+								this.showArchivationProcess(data.queue_id);
 							} else {
 								throw new Error(data.error || "Не удалось прочитать ответ сервера");
 							}
@@ -98,10 +113,11 @@
 			returnFromArchive() {
 				const processing = this.$buefy.loading.open({container: this.$refs.display.$el});
 				return (
-					this.$apiPostJ("resources/dearchive/" + this.qPk)
+					this.$apiPostJ("resources/unpack/" + this.qPk)
 						.then(({data}) => {
 							if (data.success) {
 								this.item = deepFreeze(data.resource);
+								this.showArchivationProcess(data.queue_id);
 							} else {
 								throw new Error(data.error || "Не удалось прочитать ответ сервера");
 							}
@@ -109,6 +125,27 @@
 						.catch(this.$handleErrorWithBuefy)
 						.finally(() => processing.close())
 				);
+			},
+			showArchivationProcess(queueId) {
+				this.archivationInProcess = true;
+				let runningRequest;
+				const keyInterval = setInterval(() => {
+					if (!runningRequest) {
+						if (!this.archivationInProcess) {
+							clearInterval(keyInterval);
+						}
+						runningRequest = this.$apiGetJ("site/queue-status/" + queueId)
+							.then(({data}) => {
+								if (data.status === 3) {
+									this.archivationInProcess = false;
+									this.reloadItem();
+									clearInterval(keyInterval);
+								}
+							})
+							.catch(this.$handleErrorWithBuefy)
+							.finally(() => runningRequest = null);
+					}
+				}, 3000);
 			}
 		},
 		created() {

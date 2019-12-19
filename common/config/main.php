@@ -8,10 +8,18 @@ return [
 		'@npm' => '@vendor/npm-asset',
 	],
 	'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
+	'bootstrap' => ['queue'],
 	'components' => [
 		'cache' => [
 			'class' => \yii\caching\FileCache::class,
 			'cachePath' => '@backend/runtime/cache',
+		],
+		'mutex' => [
+			'class' => \yii\mutex\MysqlMutex::class,
+		],
+		'queue' => [
+			'class' => \yii\queue\db\Queue::class,
+			'as log' => \yii\queue\LogBehavior::class,
 		],
 		'ad' => [
 			'class' => \common\components\Adldap2Wrapper::class,

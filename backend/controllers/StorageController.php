@@ -6,7 +6,10 @@ namespace backend\controllers;
 
 use backend\components\BackendController;
 use common\components\FileStorageHelper;
+use common\data\EArchiveStatus;
 use common\models\Resource;
+use yii\base\Exception;
+use yii\web\BadRequestHttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\ServerErrorHttpException;
 use yii2tech\filestorage\BucketInterface;
@@ -18,6 +21,9 @@ class StorageController extends BackendController {
 		if (!$resource) {
 			throw new NotFoundHttpException("Ресурс не найден");
 		}
+		if ($resource->archived !== EArchiveStatus::NOT_ARCHIVED) {
+			throw new ServerErrorHttpException("Ресурс находится в архиве или в процессе архивации");
+		}
 		$storeBucket = FileStorageHelper::getResourceBucket($resource);
 		if (!$storeBucket->exists()) {
 			throw new ServerErrorHttpException("Хранилище файлов ресурса недоступно");
@@ -26,6 +32,22 @@ class StorageController extends BackendController {
 			throw new NotFoundHttpException("Файл не найден");
 		}
 		return $this->asXSendFile($storeBucket, $name, $inline);
+	}
+
+	public function actionResourceArchive($id) {
+		$resource = Resource::findOne(['id' => $id]);
+		if (!$resource) {
+			throw new NotFoundHttpException("Ресурс не найден");
+		}
+		if (!$resource->archived === EArchiveStatus::ARCHIVED) {
+			throw new BadRequestHttpException("Ресурс не в архиве");
+		}
+		$bucket = FileStorageHelper::getProductBucket($resource->product);
+		$fileName = FileStorageHelper::getResourceArchiveName($resource);
+		if (!$bucket->fileExists($fileName)) {
+			throw new Exception("Потеряна архивированное хранилище ресурса #{$resource->primaryKey} '{$resource->name}'");
+		}
+		$this->asXSendFile($bucket, $fileName);
 	}
 
 	/**

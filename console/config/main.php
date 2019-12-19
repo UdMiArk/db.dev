@@ -22,20 +22,29 @@ return [
 				'@app/migrations',
 				'@yii/rbac/migrations',
 			],
+			'migrationNamespaces' => [
+				'yii\queue\db\migrations',
+			],
 		],
 	],
 	'components' => [
 		'log' => [
 			'targets' => [
 				[
-					'class' => 'yii\log\FileTarget',
+					'class' => \yii\log\FileTarget::class,
 					'levels' => ['error', 'warning'],
 				],
 				[
-					'class' => 'yii\log\FileTarget',
+					'class' => \yii\log\FileTarget::class,
 					'categories' => ['application*'],
 					'levels' => ['info'],
 					'logFile' => '@runtime/logs/commands.log',
+				],
+				[
+					'class' => \yii\log\FileTarget::class,
+					'categories' => ['yii\queue\*'],
+					'levels' => ['info', 'error', 'warning'],
+					'logFile' => '@runtime/logs/queue.log',
 				],
 			],
 		],

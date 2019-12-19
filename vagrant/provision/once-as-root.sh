@@ -66,6 +66,10 @@ sed -i -E 's/;?error_log = .*/error_log = \/app\/vagrant\/nginx\/log\/fpm.error.
 sed -i -E 's/upload_max_filesize = .*/upload_max_filesize = 2g/g' /etc/php/7.3/fpm/php.ini
 sed -i -E 's/post_max_size = .*/post_max_size = 4g/g' /etc/php/7.3/fpm/php.ini
 
+sed -i -E 's,;?date.timezone =.*,date.timezone = '"${timezone}"',g' /etc/php/7.3/fpm/php.ini
+sed -i -E 's,;?date.timezone =.*,date.timezone = '"${timezone}"',g' /etc/php/7.3/cli/php.ini
+
+
 cat <<EOF >/etc/php/7.3/mods-available/xdebug.ini
 zend_extension=xdebug.so
 xdebug.remote_enable=1

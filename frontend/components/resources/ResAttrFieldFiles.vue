@@ -31,7 +31,7 @@
 						<span :class="{'has-text-danger': file.size > maxSize}" :title="file.size > maxSize ? $msgTooLarge : undefined">{{file.size | fileSize}}</span>
 					</td>
 					<td style="width: 20px; text-align: center">
-						<b-button @click="removeFile(idx)" icon-left="delete" title="Исключить" type="is-warning"/>
+						<b-button :disabled="disabled" @click="removeFile(idx)" icon-left="delete" title="Исключить" type="is-warning"/>
 					</td>
 				</tr>
 				</tbody>

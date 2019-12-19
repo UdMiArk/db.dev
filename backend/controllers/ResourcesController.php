@@ -10,11 +10,14 @@ use backend\components\ListRequestProcessor;
 use backend\models\FormResourceCreate;
 use backend\models\FormScLogin;
 use common\components\ProductAccessibilityHelper;
+use common\data\EArchiveStatus;
 use common\data\EResourceStatus;
 use common\models\Market;
 use common\models\Product;
 use common\models\Resource;
 use common\models\ResourceType;
+use console\jobs\ArchiveResourceJob;
+use console\jobs\UnpackResourceJob;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\BadRequestHttpException;
@@ -225,11 +228,58 @@ class ResourcesController extends BackendController {
 	}
 
 	public function actionArchive($id) {
-		throw new BadRequestHttpException("Возможность архивировать ресурсы пока не добавлена");
+		$resource = $this->_getRequestItem($id);
+		$user = $this->user;
+		if ($resource->archived !== EArchiveStatus::NOT_ARCHIVED) {
+			throw new BadRequestHttpException("Ресурс уже находится в архиве или на пути в него");
+		}
+		$resource->archived = EArchiveStatus::AWAITING_ARCHIVATION;
+		$resource->archived_by = $user->primaryKey;
+		$resource->archived_at = date('Y-m-d H:i:s', time());
+		$trans = \Yii::$app->db->beginTransaction();
+		try {
+			if (!$resource->update()) {
+				throw new BadRequestHttpException($resource->getFirstError());
+			}
+			$queueId = $this->getQueue()->push(new ArchiveResourceJob([
+				'resource_id' => $resource->primaryKey,
+			]));
+			$trans->commit();
+		} catch (\Throwable $e) {
+			$trans->rollBack();
+			throw $e;
+		}
+		return $this->asJson([
+			'success' => true,
+			'queue_id' => $queueId,
+			'resource' => $this->_prepareResourceData($resource),
+		]);
 	}
 
-	public function actionDearchive($id) {
-		throw new BadRequestHttpException("Возможность архивировать ресурсы пока не добавлена");
+	public function actionUnpack($id) {
+		$resource = $this->_getRequestItem($id);
+		if ($resource->archived !== EArchiveStatus::ARCHIVED) {
+			throw new BadRequestHttpException("Ресурс не находится в архиве");
+		}
+		$resource->archived = EArchiveStatus::AWAITING_DEARCHIVATION;
+		$trans = \Yii::$app->db->beginTransaction();
+		try {
+			if (!$resource->update()) {
+				throw new BadRequestHttpException($resource->getFirstError());
+			}
+			$queueId = $this->getQueue()->push(new UnpackResourceJob([
+				'resource_id' => $resource->primaryKey,
+			]));
+			$trans->commit();
+		} catch (\Throwable $e) {
+			$trans->rollBack();
+			throw $e;
+		}
+		return $this->asJson([
+			'success' => true,
+			'queue_id' => $queueId,
+			'resource' => $this->_prepareResourceData($resource),
+		]);
 	}
 
 	protected function _prepareCreationData($user) {

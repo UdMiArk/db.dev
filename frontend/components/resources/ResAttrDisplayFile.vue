@@ -1,7 +1,10 @@
 <template>
 	<b-field :label="label">
 		<span class="input">
-			<a :href="fileLink" class="component" download target="_blank" v-if="value">{{value.name}}</a>
+			<template v-if="value">
+				<a :href="fileLink" class="component" download target="_blank" v-if="!resource.archived">{{value.name}}</a>
+				<span v-else>{{value.name}}</span>
+			</template>
 		</span>
 	</b-field>
 </template>

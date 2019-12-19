@@ -6,6 +6,7 @@ namespace backend\components;
 use common\models\User;
 use Yii;
 use yii\filters\AccessControl;
+use yii\queue\Queue;
 use yii\web\Controller;
 use yii\web\Request;
 
@@ -15,6 +16,7 @@ use yii\web\Request;
  *
  * @property-read Request $request
  * @property-read User $user
+ * @property-read Queue $queue
  */
 class BackendController extends Controller {
 	//public $enableCsrfValidation = false;
@@ -44,5 +46,12 @@ class BackendController extends Controller {
 	public function getUser() {
 		/** @noinspection PhpIncompatibleReturnTypeInspection */
 		return Yii::$app->user->identity;
+	}
+
+	/**
+	 * @return Queue
+	 */
+	public function getQueue() {
+		return Yii::$app->queue;
 	}
 }

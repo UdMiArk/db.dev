@@ -27,10 +27,10 @@
 			<b-table-column field="type" label="Тип">{{row.type.name}}</b-table-column>
 			<b-table-column field="name" label="Название" sortable>{{row.name}}</b-table-column>
 			<b-table-column centered field="status" label="Статус" sortable width="65">
-				<b-icon v-bind="$options.filters.statusIconData(row.status)"/>
+				<b-icon v-bind="$options.filters.enumIconData(row.status, $E_STATUS)"/>
 			</b-table-column>
 			<b-table-column centered field="archived" label="В архиве" sortable width="85">
-				<b-icon aria-label="В архиве" icon="check" title="В архиве" v-if="row.archived"/>
+				<b-icon v-bind="$options.filters.enumIconData(row.archived, $E_ARCHIVE)"/>
 			</b-table-column>
 		</template>
 		<template #empty>
@@ -44,7 +44,7 @@
 </template>
 
 <script>
-	import {RESOURCE_STATUSES} from "@/data/resources";
+	import {ARCHIVE_STATUS, RESOURCE_STATUS} from "@/data/resources";
 
 	export default {
 		name: "ResourcesTable",
@@ -64,9 +64,9 @@
 			perPage: Number
 		},
 		filters: {
-			statusIconData(status) {
+			enumIconData(status, enumData) {
 				const result = {},
-					statusData = RESOURCE_STATUSES.indexed[status];
+					statusData = enumData.indexed[status];
 				if (statusData) {
 					result.icon = statusData.icon;
 					result["aria-label"] = result.title = statusData.label;
@@ -91,6 +91,10 @@
 			handleItemDoubleClick(row) {
 				this.$emit("itemActivated", row);
 			}
+		},
+		created() {
+			this.$E_ARCHIVE = ARCHIVE_STATUS;
+			this.$E_STATUS = RESOURCE_STATUS;
 		}
 	};
 </script>

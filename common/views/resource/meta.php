@@ -7,7 +7,6 @@
 $product = $resource->product;
 $type = $resource->type;
 $market = $product->market;
-
 ?>
 Внутренний ID: <?= $resource->primaryKey ?>
 
@@ -29,12 +28,22 @@ $market = $product->market;
 Дата выставления статуса: <?= $resource->status_at ?>
 <?php } ?>
 
+Рынок: <?= $market->name ?>
+
 
 Создатель: <?= $resource->user->name ?>
 
 Создано: <?= $resource->created_at ?>
+<?php if ($resource->archived_at) { ?>
 
-<?php if ($resource->comment) { ?>
+
+В архиве с: <?= $resource->archived_at ?>
+
+<?php if ($resource->archived_by) { ?>
+Кто отправил в архив: <?= $resource->archivedBy->name ?>
+<?php }} if ($resource->comment) { ?>
+
+
 Комментарий: #############
 	<?= implode("\n\t", explode("\n", $resource->comment)) ?>
 
