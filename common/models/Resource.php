@@ -15,6 +15,7 @@ use yii\helpers\Json;
  * @property integer $id
  * @property integer $user_id
  * @property integer $archived_by
+ * @property integer $status_by
  * @property integer $product_id
  * @property integer $type_id
  *
@@ -36,6 +37,7 @@ use yii\helpers\Json;
  *
  * @property-read User $user
  * @property-read User $archivedBy
+ * @property-read User $statusBy
  * @property-read Product $product
  * @property-read ResourceType $type
  */
@@ -164,6 +166,10 @@ class Resource extends CommonRecord {
 		return $this->hasOne(User::class, ['id' => 'archived_by']);
 	}
 
+	public function getStatusBy() {
+		return $this->hasOne(User::class, ['id' => 'status_by']);
+	}
+
 	public function getProduct() {
 		return $this->hasOne(Product::class, ['id' => 'product_id']);
 	}
@@ -177,6 +183,7 @@ class Resource extends CommonRecord {
 			'created_at' => $this->created_at,
 			'updated_at' => $this->updated_at,
 			'status_at' => $this->updated_at,
+			'status_by' => $this->status_by,
 			'archived_at' => $this->archived_at,
 			'archived_by' => $this->archived_by,
 			'archived_queue' => $this->archived_queue,
@@ -189,6 +196,8 @@ class Resource extends CommonRecord {
 
 		if ($withUser) {
 			$result['user'] = $this->user->getFrontendInfo();
+			$statusChanger = $this->statusBy;
+			$result['statusBy'] = $statusChanger ? $statusChanger->getFrontendInfo() : null;
 		}
 		if ($withProduct) {
 			$result['product'] = $this->product->getFrontendInfo(true);

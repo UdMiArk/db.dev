@@ -221,6 +221,7 @@ class ResourcesController extends BackendController {
 			throw new BadRequestHttpException("Статус ресурса уже выставлен");
 		}
 		$item->status = $approved ? EResourceStatus::APPROVED : EResourceStatus::REJECTED;
+		$item->status_by = $this->user->primaryKey;
 		if (!$item->update()) {
 			throw new BadRequestHttpException($item->getFirstError());
 		}
