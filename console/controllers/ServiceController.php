@@ -84,7 +84,7 @@ class ServiceController extends ConsoleController {
 			$this->stdoutNl("У пользователя уже указан этот ключ: '$key'");
 			return 0;
 		}
-		$user->sc_key = $key;
+		$user->sc_key = $key ? $key : null;
 		if (!empty($user->getDirtyAttributes()) && !$user->update()) {
 			throw new Exception("Не удалось сохранить пользователя: " . $user->getFirstError());
 		}
