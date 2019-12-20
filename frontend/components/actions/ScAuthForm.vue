@@ -28,7 +28,6 @@
 </template>
 
 <script>
-	import {mapMutations} from "vuex";
 	import BaseForm from "@components/form/BaseForm";
 	import {deepFreeze} from "@plugins/object";
 
@@ -50,11 +49,10 @@
 			}
 		},
 		methods: {
-			...mapMutations("auth", ["setAuthData"]),
-			handleSubmit({changes: {domain, login, password, remember}}) {
+			handleSubmit({changes}) {
 				this.processing = true;
 				this.errors = undefined;
-				this.doLogin(domain, login, password, remember)
+				this.$apiPostJ("resources/sc-login", changes)
 					.then(({data}) => {
 						if (data.success) {
 							this.$emit("success", deepFreeze(data.data));
@@ -64,9 +62,6 @@
 					})
 					.catch(this.$handleErrorWithBuefy)
 					.finally(() => this.processing = false);
-			},
-			doLogin(email, password) {
-				return this.$apiPostJ("resources/sc-login", {email, password});
 			}
 		}
 	};
