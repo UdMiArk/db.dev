@@ -66,21 +66,29 @@ class ServiceController extends ConsoleController {
 
 	public function actionAssignEmail($email, $login, $domain = null) {
 		$user = $this->_ensureUserExists($login, $domain);
+		if ($user->email === $email) {
+			$this->stdoutNl("У пользователя уже указан этот email: '$email'");
+			return 0;
+		}
 		$user->email = $email;
 		if (!empty($user->getDirtyAttributes()) && !$user->update()) {
 			throw new Exception("Не удалось сохранить пользователя: " . $user->getFirstError());
 		}
-		$this->stdoutNl("Выполнено");
+		$this->stdoutNl("Выполнено, новый email: '$email'");
 		return 0;
 	}
 
 	public function actionAssignScKey($key, $login, $domain = null) {
 		$user = $this->_ensureUserExists($login, $domain);
+		if ($user->sc_key === $key) {
+			$this->stdoutNl("У пользователя уже указан этот ключ: '$key'");
+			return 0;
+		}
 		$user->sc_key = $key;
 		if (!empty($user->getDirtyAttributes()) && !$user->update()) {
 			throw new Exception("Не удалось сохранить пользователя: " . $user->getFirstError());
 		}
-		$this->stdoutNl("Выполнено");
+		$this->stdoutNl("Выполнено, новый ключ: '$key'");
 		return 0;
 	}
 }
