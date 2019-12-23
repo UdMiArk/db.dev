@@ -1,4 +1,4 @@
-import {apiFetch} from "@/plugins/api";
+import {apiFetch} from "@plugins/api";
 import {deepFreeze} from "@plugins/object";
 
 const MODULE = {

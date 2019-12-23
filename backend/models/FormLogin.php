@@ -72,7 +72,22 @@ class FormLogin extends FormModel {
 			[['domain'], 'in', 'range' => array_keys($this->adManager->getProviders()), 'message' => 'Указан неизвестный домен'],
 
 			[['login', 'domain', 'password'], 'required'],
+
+			[['login'], 'ruleLoginWithoutDomainSuffix'],
 		];
+	}
+
+	public function ruleLoginWithoutDomainSuffix($attr) {
+		if ($this->{$attr} && $this->domain) {
+			$login = $this->{$attr};
+			$suffix = $this->adManager->getProvider($this->domain)->getConfiguration()->get('account_suffix');
+			if ($suffix) {
+				$offset = mb_strlen($login) - mb_strlen($suffix);
+				if ($offset > 0 && mb_substr($login, $offset) === $suffix) {
+					$this->{$attr} = mb_substr($login, 0, $offset);
+				}
+			}
+		}
 	}
 
 	public function execute() {
