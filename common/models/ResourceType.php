@@ -44,6 +44,16 @@ class ResourceType extends CommonRecord {
 		return $query->all();
 	}
 
+	public static function getVisible($withAttributes = false) {
+		$query = static::find()->alias('type')->orderBy(['name' => SORT_ASC]);
+		$query->leftJoin(['resources' => Resource::find()->distinct()->select(['type_id'])], '`type`.`id` = `resources`.`type_id`');
+		$query->andWhere(['or', ['disabled' => false], '`resources`.`type_id` IS NOT NULL']);
+		if ($withAttributes) {
+			$query->with('typeAttributes');
+		}
+		return $query->all();
+	}
+
 	public function getFrontendInfo($withAttributes = false) {
 		$result = array_merge(parent::getFrontendInfo(), [
 			'name' => $this->name,

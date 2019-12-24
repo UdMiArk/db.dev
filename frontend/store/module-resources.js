@@ -4,13 +4,13 @@ import {deepFreeze} from "@plugins/object";
 const MODULE = {
 	namespaced: true,
 	state: {
-		roles: null,
+		existingTypes: null,
 		isRequestingInfo: false,
 		error: null
 	},
 	mutations: {
-		setRoles(state, roles) {
-			state.roles = roles;
+		setExistingTypes(state, types) {
+			state.existingTypes = types;
 		},
 		startRequesting(state) {
 			state.isRequestingInfo = true;
@@ -22,10 +22,10 @@ const MODULE = {
 		}
 	},
 	actions: {
-		refreshRoles({commit}) {
+		refreshExistingTypes({commit}) {
 			commit("startRequesting");
-			return apiFetch("users/roles").then(r => r.json())
-				.then(data => (commit("setRoles", deepFreeze(data)), commit("endRequesting")))
+			return apiFetch("resources/existing-types").then(r => r.json())
+				.then(data => (commit("setExistingTypes", deepFreeze(data)), commit("endRequesting")))
 				.catch(err => {
 					commit("endRequesting", err);
 					throw err;
@@ -33,12 +33,12 @@ const MODULE = {
 		}
 	}
 };
-export const MODULE_NAME = "users";
+export const MODULE_NAME = "resources";
 
 export function ensureRegistered($store) {
 	if (!$store.state[MODULE_NAME]) {
 		$store.registerModule(MODULE_NAME, MODULE);
-		$store.dispatch(MODULE_NAME + "/refreshRoles");
+		$store.dispatch(MODULE_NAME + "/refreshExistingTypes");
 	}
 }
 

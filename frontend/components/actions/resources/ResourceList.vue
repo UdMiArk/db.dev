@@ -3,7 +3,18 @@
 		<template #header>
 			<div>
 				<b-button :to="{name: 'resourceCreate'}" class="is-pulled-right" tag="router-link">Добавить ресурс</b-button>
-				<input class="input is-inline mr-sm" placeholder="Тип" type="text" v-model.lazy="manualFiltersType"/>
+				<b-dropdown aria-role="list" class="mr-sm" multiple v-if="existingTypes" v-model="manualFiltersTypeId">
+					<template #trigger>
+						<button class="button" type="button">
+							<span>Типы (Выбрано: {{manualFiltersTypeId ? manualFiltersTypeId.length : "любой"}})</span>
+							<b-icon icon="menu-down"/>
+						</button>
+					</template>
+					<b-dropdown-item :key="type.__id" :value="type.__id" aria-role="listitem" v-for="type in existingTypes">
+						<span>{{type.name}}</span>
+					</b-dropdown-item>
+				</b-dropdown>
+				<input class="input is-inline mr-sm" placeholder="Тип" type="text" v-else v-model.lazy="manualFiltersType"/>
 				<input class="input is-inline mr-sm" placeholder="Создатель" type="text" v-if="showUser" v-model.lazy="manualFiltersUser"/>
 				<input class="input is-inline mr-sm" placeholder="Объект Продвижения" type="text" v-if="showProduct" v-model.lazy="manualFiltersProduct"/>
 				<b-button @click="manualFilters = null" icon-left="close" title="Очистить фильтры" v-if="manualFilters"/>
@@ -40,6 +51,8 @@
 <script>
 	import ResourcesTable from "@components/resources/ResourcesTable";
 	import DataList from "@components/actions/DataList";
+	import {ensureRegistered as ensureResourcesModuleRegistered, MODULE_NAME} from "@/store/module-resources";
+	import {mapState} from "vuex";
 
 	const DEFAULT_PAGE = 1;
 
@@ -62,6 +75,15 @@
 			};
 		},
 		computed: {
+			...mapState(MODULE_NAME, ["existingTypes"]),
+			manualFiltersTypeId: {
+				get() {
+					return this.manualFilters?.type_id || null;
+				},
+				set(val) {
+					this.setFilterValue("type_id", (val && val.length) ? val.slice() : null);
+				}
+			},
 			manualFiltersUser: {
 				get() {
 					return this.manualFilters?.user || "";
@@ -132,6 +154,9 @@
 					this.page = DEFAULT_PAGE;
 				}
 			}
+		},
+		beforeCreate() {
+			ensureResourcesModuleRegistered(this.$store);
 		}
 	};
 </script>

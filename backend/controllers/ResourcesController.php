@@ -36,6 +36,7 @@ class ResourcesController extends BackendController {
 					'markets' => ['GET'],
 					'structure' => ['GET'],
 					'creation-data' => ['GET'],
+					'existing-types' => ['GET'],
 
 					'*' => ['POST'],
 				],
@@ -43,7 +44,7 @@ class ResourcesController extends BackendController {
 		]);
 		$behaviors['access']['rules'] = array_merge([
 			[
-				'actions' => ['view', 'markets', 'structure', 'list'],
+				'actions' => ['view', 'markets', 'structure', 'list', 'existing-types'],
 				'permissions' => [Resource::RBAC_VIEW],
 				'allow' => true,
 			],
@@ -105,6 +106,10 @@ class ResourcesController extends BackendController {
 
 	public function actionCreationData() {
 		return $this->asJson($this->_prepareCreationData($this->user));
+	}
+
+	public function actionExistingTypes() {
+		return $this->asJson($this->_formatResourceTypes(ResourceType::getVisible()));
 	}
 
 	public function actionList() {
