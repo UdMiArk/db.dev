@@ -4,13 +4,13 @@
 		<Loader v-else-if="item === null"/>
 		<ResourceDisplay :data="item" @startWaiting="showArchivationProcess(item.archived_queue)" ref="display" v-else>
 			<template #footer v-if="canDoActions">
-				<div class="has-text-right">
+				<div class="has-text-right" v-if="canApprove">
+					<b-button @click="setResourceStatus(false)" type="is-warning">Отклонить</b-button>
+					<b-button @click="setResourceStatus(true)" type="is-primary ml-sm">Утвердить</b-button>
+				</div>
+				<div v-else>
 					<b-button @click="sendToArchive" v-if="canSendToArchive">Отправить в архив</b-button>
 					<b-button @click="returnFromArchive" v-if="canReturnFromArchive">Вернуть из архива</b-button>
-					<template v-if="canApprove">
-						<b-button @click="setResourceStatus(false)" type="is-warning">Отклонить</b-button>
-						<b-button @click="setResourceStatus(true)" type="is-primary ml-sm">Утвердить</b-button>
-					</template>
 				</div>
 			</template>
 		</ResourceDisplay>

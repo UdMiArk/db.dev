@@ -17,9 +17,27 @@
 		<section class="card-content">
 			<slot name="default-top"/>
 			<div class="columns">
-				<div class="column is-half is-full-mobile">
-					<b-field label="Создатель">
-						<b-input :value="data.user.name" readonly/>
+				<div class="column is-three-quarters-desktop is-half">
+					<b-field label="Объект продвижения">
+						<b-input :value="data.product.name" readonly/>
+					</b-field>
+				</div>
+				<div class="column is-one-quarter-desktop is-half">
+					<b-field label="Рынок">
+						<b-input :value="data.product.market.name" readonly/>
+					</b-field>
+				</div>
+			</div>
+			<b-field label="Тип ресурса">
+				<b-input :value="data.type.name" readonly/>
+			</b-field>
+			<b-field label="Имя ресурса">
+				<b-input :value="data.name" readonly/>
+			</b-field>
+			<div class="columns">
+				<div class="column is-one-quarter-desktop is-half">
+					<b-field label="Статус">
+						<b-input :value="data.status | enumLabel($STATUSES)" readonly/>
 					</b-field>
 				</div>
 				<div class="column is-one-quarter-desktop is-half">
@@ -27,33 +45,9 @@
 						<b-input :value="data.created_at | parseDate | date" readonly/>
 					</b-field>
 				</div>
-				<div class="column is-one-quarter-desktop is-half">
-					<b-field label="Статус">
-						<b-input :value="data.status | enumLabel($STATUSES)" readonly/>
-					</b-field>
-				</div>
-			</div>
-			<div class="columns">
-				<div class="column is-one-quarter-desktop is-half">
-					<b-field label="Рынок">
-						<b-input :value="data.product.market.name" readonly/>
-					</b-field>
-				</div>
-				<div class="column is-three-quarters-desktop is-half">
-					<b-field label="Объект продвижения">
-						<b-input :value="data.product.name" readonly/>
-					</b-field>
-				</div>
-			</div>
-			<div class="columns">
-				<div class="column is-one-quarter-desktop is-half">
-					<b-field label="Тип ресурса">
-						<b-input :value="data.type.name" readonly/>
-					</b-field>
-				</div>
-				<div class="column is-three-quarters-desktop is-half">
-					<b-field label="Имя ресурса">
-						<b-input :value="data.name" readonly/>
+				<div class="column is-half is-full-mobile">
+					<b-field label="Создатель">
+						<b-input :value="data.user.name" readonly/>
 					</b-field>
 				</div>
 			</div>

@@ -8,9 +8,11 @@
 			:paginated="paginated"
 			:perPage="perPage"
 			:total="total"
-			@dblclick="handleItemDoubleClick"
+			:row-class="() => 'is-clickable'"
 			@page-change="handlePageChange"
 			@sort="handleSort"
+
+			@click="handleItemDoubleClick"
 
 			aria-current-label="Текущая страница"
 			aria-next-label="Следующая страница"

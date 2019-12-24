@@ -17,7 +17,7 @@
 				</b-menu-list>
 			</b-menu>
 		</template>
-		<ResourceList :additionalDataLoading="structureLoading" :additionalFilters="additionalFilters" :showProduct="!menuProductSelected" :showUser="!ownResourcesOnly" defaultActivation showStatus/>
+		<ResourceList :additionalDataLoading="structureLoading" :additionalFilters="additionalFilters" :showProduct="!menuProductSelected" defaultActivation showStatus/>
 	</ViewWithRightPanelContainer>
 </template>
 

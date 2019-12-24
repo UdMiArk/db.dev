@@ -6,6 +6,7 @@
 				<a :href="getFileLink(file)" class="component" download target="_blank" v-else>{{file.name}}</a>
 			</li>
 		</ul>
+		<span class="input" v-else/>
 	</b-field>
 </template>
 
