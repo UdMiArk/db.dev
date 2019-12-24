@@ -39,7 +39,6 @@
 	import {deepFreeze} from "@/plugins/object";
 	import ResourcesTable from "@components/resources/ResourcesTable";
 	import DataList from "@components/actions/DataList";
-	import Layout from "@components/app/Layout";
 	import BaseViewContainer from "@components/BaseViewContainer";
 	import UsersTable from "@components/users/UsersTable";
 
@@ -47,7 +46,7 @@
 
 	export default {
 		name: "UserListView",
-		components: {UsersTable, BaseViewContainer, Layout, DataList, ResourcesTable},
+		components: {UsersTable, BaseViewContainer, DataList, ResourcesTable},
 		data() {
 			return {
 				structure: null,

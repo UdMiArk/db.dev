@@ -17,64 +17,26 @@
 				</b-menu-list>
 			</b-menu>
 		</template>
-		<DataList :filters="actualFilters" :page="page - 1" :preventUpdate="structureLoading" :sorting="sorting" source="resources/list">
-			<template #header>
-				<div>
-					<b-button :to="{name: 'resourceCreate'}" class="is-pulled-right" tag="router-link">Добавить ресурс</b-button>
-					<input class="input is-inline mr-sm" placeholder="Тип" type="text" v-model.lazy="manualFiltersType"/>
-					<input class="input is-inline mr-sm" placeholder="Создатель" type="text" v-if="!ownResourcesOnly" v-model.lazy="manualFiltersUser"/>
-					<input class="input is-inline mr-sm" placeholder="Объект Продвижения" type="text" v-if="!menuProductSelected" v-model.lazy="manualFiltersProduct"/>
-					<b-button @click="manualFilters = null" icon-left="close" title="Очистить фильтры" v-if="manualFilters"/>
-				</div>
-			</template>
-			<template #default="{items, total, pageSize: actualPageSize, loading, error, reloadData}">
-				<ResourcesTable
-						:currentPage="page"
-						:data="items"
-						:loading="loading || structureLoading"
-						:perPage="actualPageSize"
-						:total="total"
-						:withUser="!ownResourcesOnly"
-						:withProduct="!menuProductSelected"
-						@itemActivated="handleItemActivation"
-						@pageChange="page = $event"
-						@sort="sorting = $event"
-						backendPagination
-						backendSorting
-						paginated
-				>
-					<template #empty>
-						<div class="box has-background-warning" v-if="error">
-							<b-button @click="reloadData" class="is-pulled-right" icon-left="reload" size="is-small" title="Перезагрузить" type="is-primary"/>
-							{{error.message || error}}
-						</div>
-					</template>
-				</ResourcesTable>
-			</template>
-		</DataList>
+		<ResourceList :additionalDataLoading="structureLoading" :additionalFilters="additionalFilters" :showProduct="!menuProductSelected" :showUser="!ownResourcesOnly" defaultActivation showStatus/>
 	</ViewWithRightPanelContainer>
 </template>
 
 <script>
 	import ViewWithRightPanelContainer from "@components/ViewWithRightPanelContainer";
 	import {deepFreeze} from "@/plugins/object";
-	import ResourcesTable from "@components/resources/ResourcesTable";
-	import DataList from "@components/actions/DataList";
-	import Layout from "@components/app/Layout";
+	import ResourceList from "@components/actions/resources/ResourceList";
 
 	const DEFAULT_PAGE = 1;
 
 	export default {
 		name: "ResourceListView",
-		components: {Layout, DataList, ResourcesTable, ViewWithRightPanelContainer},
+		components: {ResourceList, ViewWithRightPanelContainer},
 		data() {
 			return {
 				structure: null,
 				structureLoading: null,
 				expanded: {},
 				page: DEFAULT_PAGE,
-				sorting: null,
-				manualFilters: null,
 				market: null,
 				product: null,
 				activeMenuItem: null,
@@ -86,35 +48,8 @@
 			menuProductSelected() {
 				return this.activeMenuItem?.id[0] === "p";
 			},
-			manualFiltersUser: {
-				get() {
-					return this.manualFilters?.user || "";
-				},
-				set(val) {
-					this.setFilterValue("user", val);
-				}
-			},
-			manualFiltersProduct: {
-				get() {
-					return this.manualFilters?.product || "";
-				},
-				set(val) {
-					this.setFilterValue("product", val);
-				}
-			},
-			manualFiltersType: {
-				get() {
-					return this.manualFilters?.type || null;
-				},
-				set(val) {
-					this.setFilterValue("type", val);
-				}
-			},
-			actualFilters() {
+			additionalFilters() {
 				const result = {};
-				if (this.manualFilters) {
-					Object.assign(result, this.manualFilters);
-				}
 				if (this.activeMenuItem) {
 					const item = this.activeMenuItem;
 					result[item.market_id ? "product_id" : "market_id"] = item.__id;
@@ -126,17 +61,6 @@
 			}
 		},
 		methods: {
-			setFilterValue(prop, val) {
-				const newFiler = this.manualFilters ? Object.assign({}, this.manualFilters) : {};
-				if ((val || "") !== (newFiler[prop] || "")) {
-					if (val) {
-						newFiler[prop] = val;
-					} else {
-						delete newFiler[prop];
-					}
-					this.manualFilters = Object.keys(newFiler).length ? Object.freeze(newFiler) : null;
-				}
-			},
 			reloadStructure() {
 				this.structure = null;
 				this.structureLoading = true;
@@ -181,15 +105,9 @@
 			ownResourcesOnly(val) {
 				this.activeMenuItem = null;
 				this.reloadStructure();
-				if (val && this.manualFilters?.user) {
-					this.setFilterValue("user", "");
-				}
 			},
 			activeMenuItem(newActiveValue) {
 				this.page = DEFAULT_PAGE;
-				if (this.manualFilters?.product && this.menuProductSelected) {
-					this.setFilterValue("prod", "");
-				}
 			}
 		},
 		created() {
