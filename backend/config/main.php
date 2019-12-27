@@ -15,7 +15,7 @@ return [
 	'modules' => [],
 	'components' => [
 		'request' => [
-			'csrfParam' => '_csrf',
+			'csrfParam' => '_csrf_db',
 			'parsers' => [
 				'application/json' => \yii\web\JsonParser::class,
 			],

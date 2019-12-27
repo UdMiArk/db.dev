@@ -120,7 +120,7 @@ export function jsonFetchHandler(response) {
 	}
 }
 
-const CSRF_TOKEN_PROP = "_csrf";
+const CSRF_TOKEN_PROP = "_csrf_db";
 
 export default Object.freeze({
 	encodeURIObject,
