@@ -50,6 +50,8 @@ class Resource extends CommonRecord {
 	const RBAC_APPROVE = 'app.resource.approve';
 	const RBAC_ARCHIVE = 'app.resource.archive';
 
+	const RBAC_ROLE_MODERATOR = 'app.resource.moderator';
+
 	public function init() {
 		parent::init();
 		$this->on($this::EVENT_AFTER_INSERT, [$this, 'evHandleInsert']);

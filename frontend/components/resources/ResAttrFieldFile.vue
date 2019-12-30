@@ -5,10 +5,10 @@
 			:type="errors && 'is-danger'"
 	>
 		<div class="file">
-			<b-upload :disabled="disabled" v-model="model">
+			<b-upload :accept="extensions" :disabled="disabled" :required="required" v-model="model">
 				<a :disabled="disabled" class="button is-primary">
 					<b-icon icon="upload"/>
-					<span>Загрузить</span>
+					<span>Выбрать файл</span>
 				</a>
 				<span class="file-name" v-if="model">{{ model.name }}</span>
 			</b-upload>
@@ -22,8 +22,10 @@
 		props: {
 			label: String,
 			value: {},
+			options: Object,
 			errors: [Array, String],
-			disabled: Boolean
+			disabled: Boolean,
+			required: Boolean
 		},
 		computed: {
 			model: {
@@ -33,11 +35,10 @@
 				set(val) {
 					this.$emit("input", val);
 				}
+			},
+			extensions() {
+				return this.options?.extensions;
 			}
 		}
 	};
 </script>
-
-<style lang="scss">
-
-</style>

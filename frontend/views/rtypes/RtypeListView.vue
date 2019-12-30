@@ -1,16 +1,15 @@
 <template>
 	<BaseViewContainer>
-		<DataList :filters="actualFilters" :page="page - 1" :sorting="sorting" source="users/list">
+		<DataList :filters="actualFilters" :page="page - 1" :sorting="sorting" source="resource-types/list">
 			<template #header>
 				<div>
-					<b-button :to="{name: 'userRegister'}" class="is-pulled-right" tag="router-link">Добавить пользователя</b-button>
+					<b-button :to="{name: 'rtypeCreate'}" class="is-pulled-right" tag="router-link">Добавить тип</b-button>
 					<input class="input is-inline mr-sm" placeholder="Имя" type="text" v-model.lazy="manualFiltersName"/>
-					<input class="input is-inline mr-sm" placeholder="E-mail" type="text" v-model.lazy="manualFiltersEmail"/>
 					<b-button @click="manualFilters = null" icon-left="close" title="Очистить фильтры" v-if="manualFilters"/>
 				</div>
 			</template>
 			<template #default="{items, total, pageSize: actualPageSize, loading, error, reloadData}">
-				<UsersTable
+				<RtypesTable
 						:currentPage="page"
 						:data="items"
 						:loading="loading"
@@ -23,13 +22,13 @@
 						backendSorting
 						paginated
 				>
-					<template #empty>
-						<div class="box has-background-warning" v-if="error">
+					<template #empty v-if="error">
+						<div class="box has-background-warning">
 							<b-button @click="reloadData" class="is-pulled-right" icon-left="reload" size="is-small" title="Перезагрузить" type="is-primary"/>
 							{{error.message || error}}
 						</div>
 					</template>
-				</UsersTable>
+				</RtypesTable>
 			</template>
 		</DataList>
 	</BaseViewContainer>
@@ -38,13 +37,13 @@
 <script>
 	import DataList from "@components/actions/DataList";
 	import BaseViewContainer from "@components/BaseViewContainer";
-	import UsersTable from "@components/users/UsersTable";
+	import RtypesTable from "@components/rtypes/RtypesTable";
 
 	const DEFAULT_PAGE = 1;
 
 	export default {
-		name: "UserListView",
-		components: {UsersTable, BaseViewContainer, DataList},
+		name: "RtypeListView",
+		components: {RtypesTable, BaseViewContainer, DataList},
 		data() {
 			return {
 				page: DEFAULT_PAGE,
@@ -59,14 +58,6 @@
 				},
 				set(val) {
 					this.setFilterValue("name", val);
-				}
-			},
-			manualFiltersEmail: {
-				get() {
-					return this.manualFilters?.email || "";
-				},
-				set(val) {
-					this.setFilterValue("email", val);
 				}
 			},
 			actualFilters() {
@@ -90,8 +81,8 @@
 				}
 			},
 			handleItemActivation(item) {
-				this.$router.push({name: "userView", params: {qPk: item.__id.toString()}});
+				this.$router.push({name: "rtypeView", params: {qPk: item.__id.toString()}});
 			}
-		},
+		}
 	};
 </script>

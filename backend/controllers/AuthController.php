@@ -47,6 +47,7 @@ class AuthController extends BackendController {
 
 		if ($user->can(RBACData::ROLE_SUPERUSER)) {
 			$result['canManageUsers'] = true;
+			$result['canManageResourceTypes'] = true;
 		}
 		if ($user->can(Resource::RBAC_VIEW, ['index' => true])) {
 			$result['canViewResources'] = true;

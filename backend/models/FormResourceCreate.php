@@ -3,7 +3,6 @@
 
 namespace backend\models;
 
-use common\components\Adldap2Wrapper;
 use common\components\FileStorageHelper;
 use common\components\FormModel;
 use common\components\ProductAccessibilityHelper;
@@ -17,8 +16,6 @@ use common\models\User;
 /**
  * Class FormResourceCreate
  * @package backend\models
- *
- * @property-read Adldap2Wrapper $adManager
  */
 class FormResourceCreate extends FormModel {
 	public $product_id_ext;

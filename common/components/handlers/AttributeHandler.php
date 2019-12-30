@@ -10,13 +10,19 @@ use yii\base\Exception;
 
 abstract class AttributeHandler {
 	private $_attribute;
+	private $_options;
 
-	public function __construct(ResourceTypeAttribute $attribute) {
+	public function __construct(ResourceTypeAttribute $attribute, array $options) {
 		$this->_attribute = $attribute;
+		$this->_options = $options;
 	}
 
 	public function getAttribute() {
 		return $this->_attribute;
+	}
+
+	public function getOptions() {
+		return $this->_options;
 	}
 
 	/**
@@ -41,4 +47,11 @@ abstract class AttributeHandler {
 	 * @throws Exception
 	 */
 	abstract public function process($data, Resource $resource);
+
+	/**
+	 * @param array $options
+	 * @param array $errors
+	 * @return array|null|false
+	 */
+	abstract public function sanitizeOptions($options, &$errors = []);
 }

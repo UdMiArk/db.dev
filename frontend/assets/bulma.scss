@@ -20,3 +20,36 @@
 tr.is-clickable {
 	cursor: pointer;
 }
+
+span.has-ellipsis {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.fieldset {
+	background-color: #fff;
+	border-radius: 6px;
+	box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, .1), 0 0 0 1px rgba(10, 10, 10, .02);
+	color: #4a4a4a;
+	display: block;
+	padding: 1.25rem;
+	border: 1px solid #ccc;
+
+	> legend {
+		color: #363636;
+		display: block;
+		font-size: 1rem;
+		font-weight: 700;
+		background-color: #fff;
+		padding: 0 5px;
+		width: max-content;
+		border: 0 none
+	}
+}
+
+.input.is-multiline {
+	flex-wrap: wrap;
+	height: auto;
+	min-height: 2.25em;
+}

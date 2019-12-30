@@ -9,22 +9,46 @@ use common\models\Resource;
 use yii\base\Exception;
 
 class AttributeFileHandler extends AttributeHandler {
-	public function validate($data, $unprocessed = false, &$errors = []) {
+	public function validate($data, $unprocessed = false, &$errors = null) {
+		$newErrors = [];
+		$options = $this->getOptions();
+		$extensions = @$options['extensions'] ? explode(',', $options['extensions']) : null;
 		if ($unprocessed) {
 			if ($data instanceof UploadedFile) {
+				$fileName = $data->name;
 				if ($data->hasError) {
-					$errors [] = $data->errorMessage;
+					$newErrors [] = $data->errorMessage;
 					return false;
 				} elseif (!is_file($data->tempName)) {
-					$errors [] = "Загруженный файл не деступен для чтения";
+					$newErrors [] = "Загруженный файл не доступен для чтения";
 					return false;
+				} else {
+					if ($extensions) {
+						$correctExt = false;
+						$nameLen = mb_strlen($fileName);
+						foreach ($extensions as $ext) {
+							$extLen = mb_strlen($ext);
+							if (($extLen < $nameLen) && (mb_substr($fileName, $nameLen - $extLen) === $ext)) {
+								$correctExt = true;
+								break;
+							}
+						}
+						if (!$correctExt) {
+							$newErrors [] = "Расширение файла не соответсвует разрешенным ('" . implode("', '", $extensions) . "')";
+						}
+					}
 				}
 			} else {
-				$errors[] = "Не удалось прочитать загруженный файл";
+				$newErrors[] = "Не удалось прочитать загруженный файл";
 				return false;
 			}
 		}
-		return true;
+		if ($newErrors && is_array($errors)) {
+			foreach ($newErrors as $err) {
+				$errors [] = $err;
+			}
+		}
+		return empty($newErrors);
 	}
 
 	public function process($data, Resource $resource) {
@@ -57,4 +81,12 @@ class AttributeFileHandler extends AttributeHandler {
 		}
 		return $result;
 	}
+
+	public function sanitizeOptions($options, &$errors = []) {
+		if (@$options['extensions']) {
+			return ['extensions' => $options['extensions']];
+		}
+		return null;
+	}
+
 }

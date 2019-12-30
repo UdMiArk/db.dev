@@ -34,7 +34,7 @@
 				const
 					resourceType = this.resourceType,
 					result = [];
-				for (const attr of resourceType.attributes) {
+				for (const attr of resourceType.typeAttributes) {
 					result.push(Object.freeze({
 						key: attr.__id,
 						label: attr.name,

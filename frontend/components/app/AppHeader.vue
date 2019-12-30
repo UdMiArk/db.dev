@@ -28,6 +28,13 @@
 						route: {name: "resourcesList"}
 					}));
 				}
+				if (permissions.canManageResourceTypes) {
+					result.push(Object.freeze({
+						icon: "settings",
+						label: "Типы ресурсов",
+						route: {name: "rtypesList"}
+					}));
+				}
 				if (permissions.canManageUsers) {
 					result.push(Object.freeze({
 						icon: "account-group",

@@ -8,6 +8,7 @@ use common\components\handlers\AttributeFilesHandler;
 use common\components\handlers\AttributeHandler;
 use common\data\EAttributeType;
 use yii\base\Exception;
+use yii\helpers\Json;
 
 /**
  * ResourceTypeAttribute model
@@ -18,6 +19,7 @@ use yii\base\Exception;
  * @property string $name
  * @property string $description
  * @property boolean $required
+ * @property array $options
  *
  * @property-read ResourceType $resourceType
  * @property-read AttributeHandler $handler
@@ -35,28 +37,67 @@ class ResourceTypeAttribute extends CommonRecord {
 			'resource_type_id' => "Тип ресурса",
 			'type' => "Тип",
 			'name' => "Имя",
+			'options' => "Параметры",
 			'description' => "Описание",
 			'required' => "Обязателен",
 		];
 	}
 
 	public function rules() {
+		$formScenarios = [$this::SCENARIO_CREATE, $this::SCENARIO_UPDATE];
 		return array_merge(parent::rules(), [
-			[['name', 'description'], 'trim', 'on' => [$this::SCENARIO_CREATE, $this::SCENARIO_UPDATE]],
-			[['name', 'description'], 'string', 'on' => [$this::SCENARIO_CREATE, $this::SCENARIO_UPDATE]],
-			[['required'], 'boolean', 'on' => [$this::SCENARIO_CREATE, $this::SCENARIO_UPDATE]],
-			[['type'], 'integer', 'on' => [$this::SCENARIO_CREATE, $this::SCENARIO_UPDATE]],
-			[['type'], 'in', 'range' => EAttributeType::getValues(), 'on' => [$this::SCENARIO_CREATE, $this::SCENARIO_UPDATE]],
-			[['name', 'type'], 'required', 'on' => [$this::SCENARIO_CREATE, $this::SCENARIO_UPDATE]],
-			[['resource_type_id'], 'integer', 'on' => [$this::SCENARIO_CREATE]],
-			[['resource_type_id'], 'required', 'on' => [$this::SCENARIO_CREATE]],
+			[['name', 'description'], 'trim', 'on' => $formScenarios],
+			[['name', 'description'], 'string', 'on' => $formScenarios],
+			[['required'], 'boolean', 'on' => $formScenarios],
+			[['type'], 'integer', 'on' => $formScenarios],
+			[['type'], 'in', 'range' => EAttributeType::getValues(), 'on' => $formScenarios],
+			[['name', 'type'], 'required', 'on' => $formScenarios],
+			[['options'], 'ruleValidateOptions', 'on' => $formScenarios, 'skipOnEmpty' => false],
 		]);
+	}
+
+	public function getOptions() {
+		/** @noinspection PhpUndefinedFieldInspection */
+		return $this->options_json ? Json::decode($this->options_json) : [];
+	}
+
+	public function setOptions($val) {
+		/** @noinspection PhpUndefinedFieldInspection */
+		$this->options_json = empty($val) ? null : Json::encode($val);
+	}
+
+	public function ruleValidateOptions() {
+		if ($this->type && ($this->isAttributeChanged('options_json') || $this->isAttributeChanged('type'))) {
+			$newOptions = $this->handler->sanitizeOptions($this->options, $errors);
+			if ($newOptions === false) {
+				if ($errors) {
+					foreach ($errors as $key => $error) {
+						if (is_int($key)) {
+							$key = 'options';
+						} else {
+							$key = 'options.' . $key;
+						}
+						$key = 'options.' . $key;
+						if (!is_array($error)) {
+							$error = [$error];
+						}
+						foreach ($error as $err) {
+							$this->addError($key, $err);
+						}
+					}
+				} else {
+					$this->addError('options', "Не удалось сохранить настройки поля '{$this->name}'");
+				}
+			} else {
+				$this->options = $newOptions;
+			}
+		}
 	}
 
 	public function getHandler() {
 		$handlerClass = $this::getFieldTypeHandlers();
 		$handlerClass = @$handlerClass[$this->type];
-		return $handlerClass ? new $handlerClass($this) : null;
+		return $handlerClass ? new $handlerClass($this, $this->options) : null;
 	}
 
 	public function getResourceType() {
@@ -67,8 +108,9 @@ class ResourceTypeAttribute extends CommonRecord {
 		return array_merge(parent::getFrontendInfo(), [
 			'name' => $this->name,
 			'type' => $this->type,
-			'required' => $this->required,
+			'required' => boolval($this->required),
 			'description' => $this->description,
+			'options' => $this->options,
 		]);
 	}
 

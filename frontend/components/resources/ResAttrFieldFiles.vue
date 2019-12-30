@@ -2,14 +2,14 @@
 	<div class="field">
 		<label class="label">{{label}}</label>
 		<div class="file">
-			<b-upload :disabled="disabled" multiple v-model="model">
+			<b-upload :accept="extensions" :disabled="disabled" :required="required" multiple v-model="model">
 				<a :disabled="disabled" class="button is-primary">
 					<b-icon icon="upload"/>
-					<span>Загрузить</span>
+					<span>Добавить файлы</span>
 				</a>
 			</b-upload>
 		</div>
-		<p class="help" v-if="errors && errors.length">
+		<p class="help is-danger" v-if="errors && errors.length">
 			<template v-for="(err, idx) in errorsArray">
 				<br v-if="idx"/>
 				{{err}}
@@ -50,7 +50,9 @@
 			label: String,
 			value: Array,
 			errors: [Array, String],
-			disabled: Boolean
+			options: Object,
+			disabled: Boolean,
+			required: Boolean
 		},
 		computed: {
 			maxSize() {
@@ -70,6 +72,9 @@
 				set(val) {
 					this.$emit("input", val?.length ? val : null);
 				}
+			},
+			extensions() {
+				return this.options?.extensions;
 			}
 		},
 		methods: {
@@ -84,7 +89,3 @@
 		}
 	};
 </script>
-
-<style lang="scss">
-
-</style>

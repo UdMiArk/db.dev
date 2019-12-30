@@ -4,15 +4,17 @@
 			<template v-for="(error, idx) in generalErrors"><br v-if="idx"/>{{error}}</template>
 		</p>
 		<component
-				:disabled="disabled"
 				:errors="errors && errors[field.key]"
 				:is="field.component"
 				:key="field.key"
+
 				:label="field.label"
-				:required="field.required"
+				:disabled="disabled"
 				:value="value && value[field.key]"
-				@input="setValue(field.key, $event)"
 				v-for="field in fields"
+				:options="field.options"
+				:required="field.required"
+				@input="setValue(field.key, $event)"
 		/>
 	</div>
 </template>
@@ -47,13 +49,14 @@
 				const
 					resourceType = this.resourceType,
 					result = [];
-				for (const attr of resourceType.attributes) {
+				for (const attr of resourceType.typeAttributes) {
 					result.push(Object.freeze({
 						key: attr.__id,
 						label: attr.name,
 						component: FIELD_TYPES[attr.type],
 						required: attr.required,
-						description: attr.description
+						description: attr.description,
+						options: attr.options
 					}));
 				}
 				return Object.freeze(result);

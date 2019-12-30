@@ -46,6 +46,13 @@ function getEnumIcon(value, enumObj, nullValue = null) {
 	return data?.icon || nullValue;
 }
 
+function formatUser(userData) {
+	if (userData) {
+		return userData.name;
+	}
+	return null;
+}
+
 export function getReadableSize(bytes) {
 	const power = Math.floor(Math.log(bytes) / Math.log(1024)),
 		sizes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
@@ -57,3 +64,4 @@ Vue.filter("enumData", getEnumData);
 Vue.filter("enumLabel", getEnumLabel);
 Vue.filter("enumIcon", getEnumIcon);
 Vue.filter("fileSize", getReadableSize);
+Vue.filter("user", formatUser);

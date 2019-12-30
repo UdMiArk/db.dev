@@ -9,22 +9,45 @@ use common\models\Resource;
 use yii\base\Exception;
 
 class AttributeFilesHandler extends AttributeHandler {
-	public function validate($data, $unprocessed = false, &$errors = []) {
-		$foundErrors = false;
+	public function validate($data, $unprocessed = false, &$errors = null) {
+		$newErrors = [];
+		$options = $this->getOptions();
+		$extensions = @$options['extensions'] ? explode(',', $options['extensions']) : null;
 		if ($unprocessed) {
 			if ($data) foreach ($data as $fileData) {
 				if ($fileData instanceof UploadedFile) {
+					$fileName = $fileData->name;
 					if ($fileData->hasError) {
-						$errors [] = "'" . $fileData->name . "': " . $fileData->errorMessage;
+						$newErrors [] = "'" . $fileName . "': " . $fileData->errorMessage;
 					} elseif (!is_file($fileData->tempName)) {
-						$errors [] = "'" . $fileData->name . "': Загруженный файл не деступен для чтения";
+						$newErrors [] = "'" . $fileName . "': Загруженный файл не доступен для чтения";
+					} else {
+						if ($extensions) {
+							$correctExt = false;
+							$nameLen = mb_strlen($fileName);
+							foreach ($extensions as $ext) {
+								$extLen = mb_strlen($ext);
+								if (($extLen < $nameLen) && (mb_substr($fileName, $nameLen - $extLen) === $ext)) {
+									$correctExt = true;
+									break;
+								}
+							}
+							if (!$correctExt) {
+								$newErrors [] = "'" . $fileName . "': Расширение файла не соответсвует разрешенным ('" . implode("', '", $extensions) . "')";
+							}
+						}
 					}
 				} else {
-					$errors[] = "'" . $fileData->name . "': Не удалось прочитать загруженный файл";
+					$newErrors[] = "'" . $fileData->name . "': Не удалось прочитать загруженный файл";
 				}
 			}
 		}
-		return !$foundErrors;
+		if ($newErrors && is_array($errors)) {
+			foreach ($newErrors as $err) {
+				$errors [] = $err;
+			}
+		}
+		return empty($newErrors);
 	}
 
 	public function process($data, Resource $resource) {
@@ -60,5 +83,12 @@ class AttributeFilesHandler extends AttributeHandler {
 			}
 		}
 		return $result;
+	}
+
+	public function sanitizeOptions($options, &$errors = []) {
+		if (@$options['extensions']) {
+			return ['extensions' => $options['extensions']];
+		}
+		return null;
 	}
 }
