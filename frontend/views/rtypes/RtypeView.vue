@@ -1,16 +1,19 @@
 <template>
 	<BaseViewContainer>
 		<div class="box is-warning" v-if="error">{{error.message || error}}</div>
-		<RtypeFormBlock :errors="errors" :item="data" :processing="processing" :readonly="!editable" @submit="handleSubmit" ref="display">
+		<RtypeFormBlock :errors="errors" :item="data" :processing="processing" :readonly="!editable" :readonlyFields="!editable || !data.canChangeFields" @submit="handleSubmit" ref="display">
 			<template #header v-if="item">
 				<span class="card-header-title">Тип ресурса "{{data.name}}"</span>
-				<span class="card-header-icon">
-					<b-switch title="Режим редактирования" v-model="editable"/>
+				<span class="card-header-icon" v-if="item.canChange">
+					<b-switch :disabled="processing" title="Режим редактирования" v-model="editable"/>
 				</span>
 			</template>
-			<template #controls v-if="editable">
-				<div class="has-text-right">
+			<template #controls>
+				<div class="has-text-right" v-if="editable">
 					<b-button :loading="processing" native-type="submit" type="is-primary">Сохранить</b-button>
+				</div>
+				<div v-else-if="data.canDelete">
+					<b-button :loading="processing" @click="handleDelete" type="is-warning">Удалить</b-button>
 				</div>
 			</template>
 		</RtypeFormBlock>
@@ -87,6 +90,33 @@
 			handleSubmitSuccess(data) {
 				this.editable = false;
 				this.item = data.data;
+			},
+			handleDelete() {
+				this.$buefy.dialog.confirm({
+					title: "Удаление типа ресурса",
+					message: "Вы уверены что хотите <b>удалить</b> тип '" + this.data.name + "'? Удаленный тип не подлежит востановлению.",
+					confirmText: "Удалить",
+					cancelText: "Отмена",
+					type: "is-danger",
+					hasIcon: true,
+					onConfirm: () => {
+						const processDisplay = this.showLoading();
+						this.processing = true;
+						this.error = undefined;
+						this.$apiPostJ("resource-types/delete/" + this.qPk)
+							.then(({data}) => {
+								if (data.success) {
+									this.$router.push({name: "rtypesList"});
+								} else if (data.errors) {
+									this.errors = deepFreeze(processErrors(data.errors));
+								} else {
+									this.$handleErrorWithBuefy(data.error || "Не удалось прочитать ответ сервера");
+								}
+							})
+							.catch(this.$handleErrorWithBuefy)
+							.finally(() => (this.processing = false, processDisplay.close()));
+					}
+				});
 			}
 		},
 		watch: {

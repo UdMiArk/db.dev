@@ -77,7 +77,7 @@ class ResourceTypesController extends BackendController {
 	}
 
 	public function _prepareItem(ResourceType $type) {
-		return $type->getFrontendInfo(true);
+		return array_merge($type->getFrontendInfo(true), $type->getRightsData());
 	}
 
 	/**

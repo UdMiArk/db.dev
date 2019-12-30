@@ -37,7 +37,7 @@
 					:changed="changes && changes.typeAttributes"
 					:disabled="processing"
 					:errors="errors && errors.typeAttributes"
-					:readonly="readonly"
+					:readonly="readonly || readonlyFields"
 					:value="item.typeAttributes"
 					@input="handleInput(props, 'typeAttributes', $event)"
 			/>
@@ -64,6 +64,7 @@
 		props: {
 			item: Object,
 			readonly: Boolean,
+			readonlyFields: Boolean,
 			errors: Object,
 			processing: Boolean
 		},
