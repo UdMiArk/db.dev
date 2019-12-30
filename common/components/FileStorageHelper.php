@@ -92,9 +92,6 @@ class FileStorageHelper {
 		}
 	}
 
-	// TODO: remake it into background task
-	// Redis + yii2-queue
-
 	public static function getResourceBucket(Resource $resource) {
 		$fileStorage = static::getFileStorage();
 		$bucketName = static::getResourceBucketName($resource);
