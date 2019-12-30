@@ -12,6 +12,7 @@ use backend\models\FormScLogin;
 use common\components\ProductAccessibilityHelper;
 use common\data\EArchiveStatus;
 use common\data\EResourceStatus;
+use common\data\RBACData;
 use common\models\Market;
 use common\models\Product;
 use common\models\Resource;
@@ -21,6 +22,7 @@ use console\jobs\UnpackResourceJob;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\BadRequestHttpException;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 
 class ResourcesController extends BackendController {
@@ -209,9 +211,18 @@ class ResourcesController extends BackendController {
 
 	public function actionDelete($id) {
 		$item = $this->_getRequestItem($id);
-		if ($item->status === EResourceStatus::APPROVED) {
+		$user = \Yii::$app->user;
+		if ($item->status === EResourceStatus::APPROVED && !$user->can(RBACData::ROLE_SUPERUSER)) {
 			throw new BadRequestHttpException("Удаление утвержденных ресурсов запрещено");
 		}
+		if ($item->isInArchivationProcess()) {
+			throw new BadRequestHttpException("Удаление ресурсов в просессе архивации запрещено");
+		}
+		// TODO: Move delete access logic to rbac rule
+		if ($user->id !== $item->user_id && !$user->can($item::RBAC_APPROVE, ['target' => $item])) {
+			throw new ForbiddenHttpException("У вас нет прав на удаление этого ресурса");
+		}
+
 		$item->setScenario($item::SCENARIO_DELETE);
 		if (!$item->delete()) {
 			throw new BadRequestHttpException($item->getFirstError());

@@ -5,12 +5,14 @@
 		<ResourceDisplay :data="item" @startWaiting="showArchivationProcess(item.archived_queue)" ref="display" v-else>
 			<template #footer v-if="canDoActions">
 				<div class="has-text-right" v-if="canApprove">
-					<b-button @click="setResourceStatus(false)" type="is-warning">Отклонить</b-button>
-					<b-button @click="setResourceStatus(true)" type="is-primary ml-sm">Утвердить</b-button>
+					<b-button :disabled="processing" @click="handleDelete" class="is-pulled-left" type="is-warning" v-if="canDelete">Удалить</b-button>
+					<b-button :disabled="processing" @click="setResourceStatus(false)" type="is-warning">Отклонить</b-button>
+					<b-button :disabled="processing" @click="setResourceStatus(true)" type="is-primary ml-sm">Утвердить</b-button>
 				</div>
 				<div v-else>
-					<b-button @click="sendToArchive" v-if="canSendToArchive">Отправить в архив</b-button>
-					<b-button @click="returnFromArchive" v-if="canReturnFromArchive">Вернуть из архива</b-button>
+					<b-button :disabled="processing" @click="handleDelete" type="is-warning mr-sm" v-if="canDelete">Удалить</b-button>
+					<b-button :disabled="processing" @click="sendToArchive" v-if="canSendToArchive">Отправить в архив</b-button>
+					<b-button :disabled="processing" @click="returnFromArchive" v-if="canReturnFromArchive">Вернуть из архива</b-button>
 				</div>
 			</template>
 		</ResourceDisplay>
@@ -36,6 +38,7 @@
 	import {deepFreeze} from "@/plugins/object";
 	import ResourceDisplay from "@components/resources/ResourceDisplay";
 	import {mapState} from "vuex";
+	import {processErrors} from "@plugins/form";
 
 	export default {
 		name: "ResourceView",
@@ -47,13 +50,14 @@
 			return {
 				item: null,
 				error: null,
-				archivationInProcess: false
+				archivationInProcess: false,
+				processing: false
 			};
 		},
 		computed: {
 			...mapState("auth", ["permissions"]),
 			canDoActions() {
-				return this.canApprove || this.canSendToArchive || this.canReturnFromArchive;
+				return this.canApprove || this.canSendToArchive || this.canReturnFromArchive || this.canDelete;
 			},
 			canSendToArchive() {
 				return this.item?.canArchive && !this.item.archived;
@@ -63,9 +67,15 @@
 			},
 			canApprove() {
 				return this.item?.canApprove;
+			},
+			canDelete() {
+				return this.item?.canDelete;
 			}
 		},
 		methods: {
+			showLoading() {
+				return this.$buefy.loading.open({container: this.$refs.display.$el});
+			},
 			reloadItem() {
 				this.error = null;
 				this.item = null;
@@ -80,7 +90,8 @@
 			},
 
 			setResourceStatus(approved) {
-				const processing = this.$buefy.loading.open({container: this.$refs.display.$el});
+				const processing = this.showLoading();
+				this.processing = true;
 				return (
 					this.$apiPostJ("resources/set-status/" + this.qPk, {approved: approved})
 						.then(({data}) => {
@@ -91,11 +102,11 @@
 							}
 						})
 						.catch(this.$handleErrorWithBuefy)
-						.finally(() => processing.close())
+						.finally(() => (this.processing = false, processing.close()))
 				);
 			},
 			sendToArchive() {
-				const processing = this.$buefy.loading.open({container: this.$refs.display.$el});
+				const processing = this.showLoading();
 				return (
 					this.$apiPostJ("resources/archive/" + this.qPk)
 						.then(({data}) => {
@@ -111,7 +122,7 @@
 				);
 			},
 			returnFromArchive() {
-				const processing = this.$buefy.loading.open({container: this.$refs.display.$el});
+				const processing = this.showLoading();
 				return (
 					this.$apiPostJ("resources/unpack/" + this.qPk)
 						.then(({data}) => {
@@ -146,6 +157,35 @@
 							.finally(() => runningRequest = null);
 					}
 				}, 3000);
+			},
+			handleDelete() {
+				if (this.canDelete) {
+					this.$buefy.dialog.confirm({
+						title: "Удаление ресурса",
+						message: "Вы уверены что хотите <b>удалить</b> ресурс '" + this.item.name + "'? Удаленный ресурс не подлежит востановлению.",
+						confirmText: "Удалить",
+						cancelText: "Отмена",
+						type: "is-danger",
+						hasIcon: true,
+						onConfirm: () => {
+							const processDisplay = this.showLoading();
+							this.processing = true;
+							this.error = undefined;
+							this.$apiPostJ("resources/delete/" + this.qPk)
+								.then(({data}) => {
+									if (data.success) {
+										this.$router.push({name: "resourcesList"});
+									} else if (data.errors) {
+										this.errors = deepFreeze(processErrors(data.errors));
+									} else {
+										this.$handleErrorWithBuefy(data.error || "Не удалось прочитать ответ сервера");
+									}
+								})
+								.catch(this.$handleErrorWithBuefy)
+								.finally(() => (this.processing = false, processDisplay.close()));
+						}
+					});
+				}
 			}
 		},
 		created() {

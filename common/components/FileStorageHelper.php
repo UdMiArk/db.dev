@@ -225,4 +225,18 @@ class FileStorageHelper {
 		}
 	}
 
+	public static function destroyResourceStorage(Resource $resource) {
+		if ($resource->archived) {
+			$bucket = FileStorageHelper::getProductBucket($resource->product);
+			if (!$bucket->deleteFile(FileStorageHelper::getResourceArchiveName($resource))) {
+				throw new Exception("Не удалось удалить архивированное хранилище ресурса");
+			}
+		} else {
+			$bucket = FileStorageHelper::getResourceBucket($resource);
+			if (!$bucket->destroy()) {
+				throw new Exception("Не удалось удалить хранилище ресурса");
+			}
+		}
+	}
+
 }

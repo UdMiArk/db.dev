@@ -7,6 +7,8 @@ use common\components\DateTimeStampBehavior;
 use common\components\FileStorageHelper;
 use common\data\EArchiveStatus;
 use common\data\EResourceStatus;
+use common\data\RBACData;
+use yii\base\Exception;
 use yii\helpers\Json;
 
 /**
@@ -60,6 +62,8 @@ class Resource extends CommonRecord {
 		$this->on($this::EVENT_BEFORE_INSERT, [$this, 'evHandleBeforeInsert']);
 		$this->on($this::EVENT_BEFORE_UPDATE, [$this, 'evHandleBeforeUpdate']);
 
+		$this->on($this::EVENT_AFTER_DELETE, [$this, 'evHandleDelete']);
+
 		$this->status = EResourceStatus::AWAITING;
 	}
 
@@ -85,6 +89,13 @@ class Resource extends CommonRecord {
 		if (!in_array($archived, [EArchiveStatus::AWAITING_DEARCHIVATION, EArchiveStatus::ARCHIVED])) {
 			FileStorageHelper::updateResourceMetaFile($this);
 		}
+	}
+
+	protected function evHandleDelete() {
+		if ($this->isInArchivationProcess()) {
+			throw new Exception("Ресурс в процессе архивации и не может быть удален");
+		}
+		FileStorageHelper::destroyResourceStorage($this);
 	}
 
 	protected function evHandleBeforeInsert() {
@@ -211,21 +222,45 @@ class Resource extends CommonRecord {
 		return $result;
 	}
 
+	public function isInArchivationProcess() {
+		return !in_array($this->archived, [EArchiveStatus::ARCHIVED, EArchiveStatus::NOT_ARCHIVED]);
+	}
+
 	public function getRightsData() {
 		$result = [];
 
 		$user = \Yii::$app->user;
 
 		if ($this->status === EResourceStatus::AWAITING) {
-			if ($user->can($this::RBAC_APPROVE)) {
+			if ($user->can($this::RBAC_APPROVE, ['target' => $this])) {
 				$result['canApprove'] = true;
+				$result['canDelete'] = true;
+			}
+			if ($user->id === $this->user_id) {
+				$result['canDelete'] = true;
 			}
 		} else {
-			if (in_array($this->archived, [EArchiveStatus::ARCHIVED, EArchiveStatus::NOT_ARCHIVED]) && $user->can($this::RBAC_ARCHIVE)) {
+			$noArchivingInProcess = !$this->isInArchivationProcess();
+			if (
+				$noArchivingInProcess
+				&& $user->can($this::RBAC_ARCHIVE, ['target' => $this])
+			) {
 				$result['canArchive'] = true;
 			}
+			if ($this->status === EResourceStatus::REJECTED) {
+				if (
+					$noArchivingInProcess
+					&&
+					($user->id === $this->user_id || $user->can($this::RBAC_APPROVE, ['target' => $this]))
+				) {
+					$result['canDelete'] = true;
+				}
+			} else {
+				if ($user->can(RBACData::ROLE_SUPERUSER)) {
+					$result['canDelete'] = true;
+				}
+			}
 		}
-
 
 		return $result;
 	}
