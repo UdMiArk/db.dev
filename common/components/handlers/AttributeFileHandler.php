@@ -12,7 +12,7 @@ class AttributeFileHandler extends AttributeHandler {
 	public function validate($data, $unprocessed = false, &$errors = null) {
 		$newErrors = [];
 		$options = $this->getOptions();
-		$extensions = @$options['extensions'] ? explode(',', $options['extensions']) : null;
+		$extensions = @$options['extensions'] ? explode(',', mb_strtolower($options['extensions'])) : null;
 		if ($unprocessed) {
 			if ($data instanceof UploadedFile) {
 				$fileName = $data->name;
@@ -25,10 +25,11 @@ class AttributeFileHandler extends AttributeHandler {
 				} else {
 					if ($extensions) {
 						$correctExt = false;
-						$nameLen = mb_strlen($fileName);
+						$loweredFileName = mb_strtolower($fileName);
+						$nameLen = mb_strlen($loweredFileName);
 						foreach ($extensions as $ext) {
 							$extLen = mb_strlen($ext);
-							if (($extLen < $nameLen) && (mb_substr($fileName, $nameLen - $extLen) === $ext)) {
+							if (($extLen < $nameLen) && (mb_substr($loweredFileName, $nameLen - $extLen) === $ext)) {
 								$correctExt = true;
 								break;
 							}

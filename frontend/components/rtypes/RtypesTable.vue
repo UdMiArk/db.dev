@@ -26,7 +26,7 @@
 			<b-table-column field="name" label="Название" sortable>{{row.name}}</b-table-column>
 			<b-table-column field="responsible" label="Ответственный" sortable>{{row.responsible | user}}</b-table-column>
 			<b-table-column field="description" label="Описание">
-				<span :title="row.description" class="has-ellipsis">{{row.description.trim().split("\n")[0]}}</span>
+				<span :title="row.description" class="has-ellipsis">{{row.description | firstLine}}</span>
 			</b-table-column>
 		</template>
 		<template #empty>

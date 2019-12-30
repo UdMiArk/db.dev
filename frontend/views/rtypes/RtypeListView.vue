@@ -1,6 +1,6 @@
 <template>
 	<BaseViewContainer>
-		<DataList :filters="actualFilters" :page="page - 1" :sorting="sorting" source="resource-types/list">
+		<DataList :filters="actualFilters" :page="page - 1" :pageSize="50" :sorting="sorting" source="resource-types/list">
 			<template #header>
 				<div>
 					<b-button :to="{name: 'rtypeCreate'}" class="is-pulled-right" tag="router-link">Добавить тип</b-button>

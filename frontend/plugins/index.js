@@ -65,3 +65,9 @@ Vue.filter("enumLabel", getEnumLabel);
 Vue.filter("enumIcon", getEnumIcon);
 Vue.filter("fileSize", getReadableSize);
 Vue.filter("user", formatUser);
+Vue.filter("firstLine", function firstLine(text) {
+	if (text && typeof text === "string") {
+		return text.trim().split("\n")[0];
+	}
+	return text;
+});
