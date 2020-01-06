@@ -4,6 +4,12 @@
 			:message="errors"
 			:type="errors && 'is-danger'"
 	>
+		<template #label v-if="description">
+			{{label}}
+			<b-tooltip :label="description" position="is-right" v-if="description">
+				<b-icon icon="help-circle"/>
+			</b-tooltip>
+		</template>
 		<div class="file">
 			<b-upload :accept="extensions" :disabled="disabled" :required="required" v-model="model">
 				<a :disabled="disabled" class="button is-primary">
@@ -21,6 +27,7 @@
 		name: "ResAttrFieldFile",
 		props: {
 			label: String,
+			description: String,
 			value: {},
 			options: Object,
 			errors: [Array, String],

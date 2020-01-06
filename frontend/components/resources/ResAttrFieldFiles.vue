@@ -1,6 +1,11 @@
 <template>
 	<div class="field">
-		<label class="label">{{label}}</label>
+		<label class="label">
+			{{label}}
+			<b-tooltip :label="description" position="is-right" size="is-small" style="cursor: help" v-if="description">
+				<b-icon icon="help-circle" size="is-small"/>
+			</b-tooltip>
+		</label>
 		<div class="file">
 			<b-upload :accept="extensions" :disabled="disabled" :required="required" multiple v-model="model">
 				<a :disabled="disabled" class="button is-primary">
@@ -48,6 +53,7 @@
 		name: "ResAttrFieldFiles",
 		props: {
 			label: String,
+			description: String,
 			value: Array,
 			errors: [Array, String],
 			options: Object,
