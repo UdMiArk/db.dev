@@ -54,6 +54,10 @@ function formatUser(userData) {
 }
 
 export function getReadableSize(bytes) {
+	if (!bytes) {
+		return "0 B";
+	}
+
 	const power = Math.floor(Math.log(bytes) / Math.log(1024)),
 		sizes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 
