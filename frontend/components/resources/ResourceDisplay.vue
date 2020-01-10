@@ -28,13 +28,19 @@
 					</b-field>
 				</div>
 			</div>
-			<b-field label="Тип ресурса">
-				<b-input :value="data.type.name" readonly/>
-			</b-field>
-			<b-field label="Имя ресурса">
-				<b-input :value="data.name" readonly/>
-			</b-field>
 			<div class="columns">
+				<div class="column is-one-quarter-desktop is-half-tablet">
+					<b-field label="Тип ресурса">
+						<b-input :value="data.type.name" readonly/>
+					</b-field>
+				</div>
+				<div class="column">
+					<b-field label="Имя ресурса">
+						<b-input :value="data.name" readonly/>
+					</b-field>
+				</div>
+			</div>
+			<div class="columns is-multiline">
 				<div class="column is-one-quarter-desktop is-half">
 					<b-field label="Статус">
 						<b-input :value="data.status | enumLabel($STATUSES)" readonly/>
@@ -45,7 +51,7 @@
 						<b-input :value="data.created_at | parseDate | date" readonly/>
 					</b-field>
 				</div>
-				<div class="column is-half is-full-mobile">
+				<div class="column">
 					<b-field label="Создатель">
 						<b-input :value="data.user.name" readonly/>
 					</b-field>
