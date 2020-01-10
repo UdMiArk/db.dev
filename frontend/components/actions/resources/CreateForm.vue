@@ -1,8 +1,5 @@
 <template>
 	<BaseForm #default="{props}" :data="defaultValues" :locked="processing" :watchers="formWatchers" @submit="handleSubmit" class="app-form card" ref="display">
-		<header class="card-header">
-			<span class="card-header-title">Добавление ресурса</span>
-		</header>
 		<section class="card-content">
 			<div class="columns">
 				<div class="column is-one-quarter-desktop is-half">

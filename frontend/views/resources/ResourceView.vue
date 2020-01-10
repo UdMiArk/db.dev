@@ -2,20 +2,23 @@
 	<BaseViewContainer>
 		<div class="box is-warning" v-if="error">{{error.message || error}}</div>
 		<Loader v-else-if="item === null"/>
-		<ResourceDisplay :data="item" @startWaiting="showArchivationProcess(item.archived_queue)" ref="display" v-else>
-			<template #footer v-if="canDoActions">
-				<div class="has-text-right" v-if="canApprove">
-					<b-button :disabled="processing" @click="handleDelete" class="is-pulled-left" type="is-warning" v-if="canDelete">Удалить</b-button>
-					<b-button :disabled="processing" @click="setResourceStatus(false)" type="is-warning">Отклонить</b-button>
-					<b-button :disabled="processing" @click="setResourceStatus(true)" type="is-primary ml-sm">Утвердить</b-button>
-				</div>
-				<div v-else>
-					<b-button :disabled="processing" @click="handleDelete" type="is-warning mr-sm" v-if="canDelete">Удалить</b-button>
-					<b-button :disabled="processing" @click="sendToArchive" v-if="canSendToArchive">Отправить в архив</b-button>
-					<b-button :disabled="processing" @click="returnFromArchive" v-if="canReturnFromArchive">Вернуть из архива</b-button>
-				</div>
-			</template>
-		</ResourceDisplay>
+		<div style="position: relative" v-else>
+			<h1 class="is-size-4" style="position: absolute; top: -2.7rem;">Ресурс "{{item.name}}"</h1>
+			<ResourceDisplay :data="item" @startWaiting="showArchivationProcess(item.archived_queue)" ref="display">
+				<template #footer v-if="canDoActions">
+					<div class="has-text-right" v-if="canApprove">
+						<b-button :disabled="processing" @click="handleDelete" class="is-pulled-left" type="is-warning" v-if="canDelete">Удалить</b-button>
+						<b-button :disabled="processing" @click="setResourceStatus(false)" type="is-warning">Отклонить</b-button>
+						<b-button :disabled="processing" @click="setResourceStatus(true)" type="is-primary ml-sm">Утвердить</b-button>
+					</div>
+					<div v-else>
+						<b-button :disabled="processing" @click="handleDelete" type="is-warning mr-sm" v-if="canDelete">Удалить</b-button>
+						<b-button :disabled="processing" @click="sendToArchive" v-if="canSendToArchive">Отправить в архив</b-button>
+						<b-button :disabled="processing" @click="returnFromArchive" v-if="canReturnFromArchive">Вернуть из архива</b-button>
+					</div>
+				</template>
+			</ResourceDisplay>
+		</div>
 		<b-loading :active.sync="archivationInProcess" can-cancel>
 			<div class="box has-text-centered" style="z-index: 1">
 				<b-button @click="archivationInProcess = false" class="is-pulled-right" icon-left="close"/>

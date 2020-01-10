@@ -7,7 +7,10 @@
 			У вас отсутствуют доступные для управления объекты продвижения.
 			Вы можете создать их <a :href="linkCreateProduct" target="_blank">по ссылке</a>.
 		</div>
-		<ResourceCreateForm :creationData="creationData" @success="handleCreationSuccess" v-else/>
+		<div style="position: relative" v-else>
+			<h1 class="is-size-4" style="position: absolute; top: -2.7rem;">Добавление ресурса</h1>
+			<ResourceCreateForm :creationData="creationData" @success="handleCreationSuccess"/>
+		</div>
 	</BaseViewContainer>
 </template>
 

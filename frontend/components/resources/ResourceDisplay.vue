@@ -1,6 +1,6 @@
 <template>
 	<div class="card">
-		<header class="card-header">
+		<!-- <header class="card-header">
 			<slot name="header">
 				<span class="card-header-title is-size-4">
 					Ресурс "{{data.name}}"
@@ -13,7 +13,7 @@
 					><b-icon :icon="archivedData.icon" class="mr-xs is-size-7"/><span style="vertical-align: top">{{archivedData.label}}</span></b-tag>
 				</span>
 			</slot>
-		</header>
+		</header> -->
 		<section class="card-content">
 			<slot name="default-top"/>
 			<div class="columns">
