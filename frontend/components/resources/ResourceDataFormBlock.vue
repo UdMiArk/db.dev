@@ -1,6 +1,5 @@
 <template>
 	<div>
-		<p class="notification is-info is-narrow" style="white-space: pre-wrap" v-if="resourceType.description">{{resourceType.description}}</p>
 		<p class="help is-danger" v-if="generalErrors">
 			<template v-for="(error, idx) in generalErrors"><br v-if="idx"/>{{error}}</template>
 		</p>

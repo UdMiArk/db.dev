@@ -54,8 +54,8 @@
 				vertical-align: top;
 			}
 
-			&-title {
-
+			&-name {
+				font-size: 1rem;
 			}
 		}
 	}

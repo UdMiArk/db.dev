@@ -14,6 +14,7 @@ use yii\db\AfterSaveEvent;
  * @property integer $id
  * @property string $name
  * @property string $description
+ * @property string $description_link
  * @property boolean $disabled
  * @property integer $responsible_id
  *
@@ -31,6 +32,7 @@ class ResourceType extends CommonRecord {
 		return [
 			'name' => "Имя",
 			'description' => "Описание",
+			'description_link' => "Ссылка на описание",
 			'disabled' => "Отключен",
 			'typeAttributes' => 'Поля ресурса',
 			'responsible_id' => "Ответственный по умолчанию",
@@ -40,8 +42,8 @@ class ResourceType extends CommonRecord {
 	public function rules() {
 		$formScenarios = [$this::SCENARIO_CREATE, $this::SCENARIO_UPDATE];
 		return array_merge(parent::rules(), [
-			[['name', 'description'], 'trim', 'on' => $formScenarios],
-			[['name', 'description'], 'string', 'on' => $formScenarios],
+			[['name', 'description', 'description_link'], 'trim', 'on' => $formScenarios],
+			[['name', 'description', 'description_link'], 'string', 'on' => $formScenarios],
 			[['name'], 'required', 'on' => $formScenarios],
 			[['responsible_id'], 'exist', 'targetRelation' => 'responsible', 'on' => $formScenarios],
 			[['typeAttributes'], 'ruleValidateTypeAttributes', 'skipOnEmpty' => false, 'on' => $formScenarios],
@@ -195,6 +197,7 @@ class ResourceType extends CommonRecord {
 		$result = array_merge(parent::getFrontendInfo(), [
 			'name' => $this->name,
 			'description' => $this->description,
+			'description_link' => $this->description_link,
 			'responsible_id' => $this->responsible_id,
 			'responsible' => $this->responsible_id ? $this->responsible->getFrontendInfo() : null,
 		]);
