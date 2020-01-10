@@ -2,7 +2,7 @@
 	<DataList :filters="actualFilters" :page="page - 1" :preventUpdate="additionalDataLoading" :sorting="sorting" source="resources/list">
 		<template #header>
 			<div>
-				<b-button :to="{name: 'resourceCreate'}" class="is-pulled-right" tag="router-link">Добавить ресурс</b-button>
+				<b-button :to="{name: 'resourceCreate'}" class="is-pulled-right is-primary" outlined tag="router-link">Добавить ресурс</b-button>
 				<b-dropdown aria-role="list" class="mr-sm" multiple v-if="existingTypes" v-model="manualFiltersTypeId">
 					<template #trigger>
 						<button class="button" type="button">

@@ -1,8 +1,8 @@
 <template>
 	<ViewWithRightPanelContainer>
 		<template #sidebar>
-			<div class="box is-narrow">
-				<b-checkbox-button type="is-white-outline" v-model="ownResourcesOnly">
+			<div class="mb-sm">
+				<b-checkbox-button type="is-light-outlined" v-model="ownResourcesOnly">
 					<span class="mr-sm">Только мои</span>
 					<b-icon :icon="ownResourcesOnly ? 'checkbox-marked-outline' : 'checkbox-blank-outline'"/>
 				</b-checkbox-button>

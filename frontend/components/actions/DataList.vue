@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div class="box is-narrow" v-if="$slots.header">
+		<div class="mb-sm" v-if="$slots.header">
 			<slot name="header"/>
 		</div>
 		<slot
