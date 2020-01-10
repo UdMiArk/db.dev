@@ -65,7 +65,7 @@
 					</div>
 					<div class="column is-full" v-if="getResourceType(props.type_id).description || getResourceType(props.type_id).description_link">
 						<p v-if="getResourceType(props.type_id).description">{{getResourceType(props.type_id).description}}</p>
-						<b-button :href="getResourceType(props.type_id).description_link" icon-left="information" tag="a" target="_blank" type="is-light">Правила</b-button>
+						<b-button :href="getResourceType(props.type_id).description_link" icon-left="information" tag="a" target="_blank" type="is-light" v-if="getResourceType(props.type_id).description_link">Правила</b-button>
 					</div>
 				</div>
 				<ResourceDataFormBlock :disabled="processing" :errors="dataErrors" :resourceType="getResourceType(props.type_id)" v-model="props.data"/>
