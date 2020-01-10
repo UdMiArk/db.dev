@@ -1,11 +1,12 @@
 <template>
 	<b-field :label="label">
-		<span class="input">
-			<template v-if="value">
-				<a :href="fileLink" class="component" download target="_blank" v-if="!resource.archived">{{value.name}}</a>
-				<span v-else>{{value.name}}</span>
-			</template>
-		</span>
+		<ul class="list" v-if="value">
+			<li class="list-item">
+				<span v-if="resourceArchived">{{value.name}}</span>
+				<a :href="fileLink" class="component" download target="_blank" v-else>{{value.name}}</a>
+			</li>
+		</ul>
+		<span class="input" v-else/>
 	</b-field>
 </template>
 
@@ -25,6 +26,9 @@
 					return undefined;
 				}
 				return getApiResourceFileLink(this.value, this.resource.__id);
+			},
+			resourceArchived() {
+				return !!this.resource.archived;
 			}
 		}
 	};

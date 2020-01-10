@@ -1,13 +1,13 @@
 <template>
 	<div class="field">
 		<label class="label">
-			{{label}}
+			{{label + (required ? " *" : "")}}
 			<b-tooltip :label="description" position="is-right" size="is-small" style="cursor: help" v-if="description">
 				<b-icon icon="help-circle" size="is-small"/>
 			</b-tooltip>
 		</label>
 		<div class="file">
-			<b-upload :accept="extensions" :disabled="disabled" :required="required" multiple v-model="model">
+			<b-upload :accept="extensions" :disabled="disabled" multiple v-model="model">
 				<a :disabled="disabled" class="button is-primary">
 					<b-icon icon="upload"/>
 					<span>Добавить файлы</span>
@@ -22,13 +22,6 @@
 		</p>
 		<div>
 			<table class="table is-fullwidth" v-if="model && model.length">
-				<thead>
-				<tr>
-					<th>Имя</th>
-					<th style="width: 100px; text-align: right">Размер</th>
-					<th style="width: 20px; text-align: center">Исключить</th>
-				</tr>
-				</thead>
 				<tbody>
 				<tr :key="idx" v-for="(file, idx) in model">
 					<td>{{file.name}}</td>

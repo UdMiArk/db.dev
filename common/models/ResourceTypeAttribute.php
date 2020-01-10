@@ -122,7 +122,7 @@ class ResourceTypeAttribute extends CommonRecord {
 	 * @return boolean
 	 */
 	public function validateResourceData($data, $unprocessed = false, &$attrErrors = []) {
-		if (is_null($data)) {
+		if (is_null($data) || $data === '') {
 			if ($this->required) {
 				$attrErrors [] = "Поле \"" . $this->name . "\" обязательно к заполнению";
 				return false;
@@ -158,6 +158,9 @@ class ResourceTypeAttribute extends CommonRecord {
 		$handler = $this->handler;
 		if (!$handler) {
 			throw new Exception("Failed to initialize attribute handler for attribute '" . $this->name . "' (type '" . $this->type . "')");
+		}
+		if ($data === '') {
+			$data = null;
 		}
 		return $handler->process($data, $resource);
 	}

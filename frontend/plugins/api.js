@@ -82,7 +82,7 @@ export function appendObjToFormData(formData, dataObj, rootName, ignoreList = nu
 		} else if (dataObj instanceof File) {
 			formData.append(rootName, dataObj, dataObj.name);
 		} else {
-			formData.append(rootName, dataObj);
+			formData.append(rootName, dataObj === null ? "" : dataObj);
 		}
 	}
 	return formData;
