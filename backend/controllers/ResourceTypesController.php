@@ -61,6 +61,7 @@ class ResourceTypesController extends BackendController {
 
 		return $this->asJson($listProcessor->prepare($query, [
 			'__id' => 'primaryKey',
+			'group_name',
 			'name',
 			'description',
 			'disabled',

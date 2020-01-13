@@ -28,10 +28,10 @@
 			<b-table-column :visible="withProduct" field="product" label="Объект продвижения" sortable>{{row.product.name}}</b-table-column>
 			<b-table-column field="type" label="Тип">{{row.type.name}}</b-table-column>
 			<b-table-column field="name" label="Название" sortable>{{row.name}}</b-table-column>
-			<b-table-column centered field="status" label="Статус" sortable width="65">
+			<b-table-column :visible="withStatus" centered field="status" label="Статус" sortable width="65">
 				<b-icon v-bind="$options.filters.enumIconData(row.status, $E_STATUS)"/>
 			</b-table-column>
-			<b-table-column centered field="archived" label="В архиве" sortable width="85">
+			<b-table-column :visible="withArchived" centered field="archived" label="В архиве" sortable width="85">
 				<b-icon v-bind="$options.filters.enumIconData(row.archived, $E_ARCHIVE)"/>
 			</b-table-column>
 		</template>
@@ -57,6 +57,8 @@
 			},
 			withUser: Boolean,
 			withProduct: Boolean,
+			withStatus: Boolean,
+			withArchived: Boolean,
 			backendSorting: Boolean,
 			backendPagination: Boolean,
 			total: Number,

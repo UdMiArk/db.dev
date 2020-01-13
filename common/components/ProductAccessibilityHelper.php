@@ -30,15 +30,25 @@ class ProductAccessibilityHelper {
 			// FIXME: Really bad way to manage password, shouldn't be processed on DB at all
 			$address .= '&password=' . static::_encodeURIComponent(\Yii::$app->security->encryptByPassword($password, static::getSecretKey()));
 		}
-		return Json::decode(file_get_contents($address));
+		$ctx = stream_context_create(['http' =>
+			[
+				'timeout' => 15,
+			],
+		]);
+		return Json::decode(@file_get_contents($address, false, $ctx));
 	}
 
 	protected static function _requestUserProducts($userKey) {
+		$ctx = stream_context_create(['http' =>
+			[
+				'timeout' => 15,
+			],
+		]);
 		$address =
 			static::getConfig()['action']
 			. '?key=' . static::_encodeURIComponent(static::getSecretKey())
 			. '&user_key=' . static::_encodeURIComponent($userKey);
-		return Json::decode(file_get_contents($address));
+		return Json::decode(@file_get_contents($address, false, $ctx));
 	}
 
 	public static function updateUserKey(User $user, $email, $password, &$errors = []) {

@@ -18,6 +18,7 @@ class ListRequestProcessor {
 
 	public $filterHandlers = null;
 	public $filterOnlyByHandlers = false;
+	public $defaultFilters = null;
 
 	public $sortingHandlers = null;
 	public $sortingOnlyByHandlers = false;
@@ -102,7 +103,11 @@ class ListRequestProcessor {
 
 	public function getFilters() {
 		$filters = \Yii::$app->request->get('filters');
-		return empty($filters) ? [] : is_string($filters) ? Json::decode($filters) : $filters;
+		$filters = empty($filters) ? [] : (is_string($filters) ? Json::decode($filters) : $filters);
+		if ($this->defaultFilters) {
+			$filters = array_merge($this->defaultFilters, $filters);
+		}
+		return $filters;
 	}
 
 	/**

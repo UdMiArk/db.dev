@@ -17,7 +17,15 @@
 				<input class="input is-inline mr-sm" placeholder="Тип" type="text" v-else v-model.lazy="manualFiltersType"/>
 				<input class="input is-inline mr-sm" placeholder="Создатель" type="text" v-if="showUser" v-model.lazy="manualFiltersUser"/>
 				<input class="input is-inline mr-sm" placeholder="Объект Продвижения" type="text" v-if="showProduct" v-model.lazy="manualFiltersProduct"/>
-				<b-button @click="manualFilters = null" icon-left="close" title="Очистить фильтры" v-if="manualFilters"/>
+				<b-checkbox-button class="mr-sm" style="display: inline-block" type="is-light-outlined" v-model="manualFiltersNoArchived">
+					<span class="mr-sm">Скрыть архивные</span>
+					<b-icon :icon="manualFiltersNoArchived ? 'checkbox-marked-outline' : 'checkbox-blank-outline'"/>
+				</b-checkbox-button>
+				<b-checkbox-button style="display: inline-block" type="is-light-outlined" v-model="manualFiltersApprovedOnly">
+					<span class="mr-sm">Только утвержденные</span>
+					<b-icon :icon="manualFiltersApprovedOnly ? 'checkbox-marked-outline' : 'checkbox-blank-outline'"/>
+				</b-checkbox-button>
+				<b-button @click="manualFilters = null" class="ml-sm" icon-left="close" title="Очистить фильтры" v-if="manualFilters"/>
 			</div>
 		</template>
 		<template #default="{items, total, pageSize: actualPageSize, loading, error, reloadData}">
@@ -28,7 +36,8 @@
 					:perPage="actualPageSize"
 					:total="total"
 					:withProduct="showProduct"
-					:withStatus="showStatus"
+					:withArchived="showArchived && !manualFiltersNoArchived"
+					:withStatus="showStatus && !manualFiltersApprovedOnly"
 					:withUser="showUser"
 					@itemActivated="handleItemActivation"
 					@pageChange="page = $event"
@@ -64,6 +73,7 @@
 			showUser: Boolean,
 			showProduct: Boolean,
 			showStatus: Boolean,
+			showArchived: Boolean,
 			defaultActivation: Boolean,
 			additionalDataLoading: Boolean
 		},
@@ -108,6 +118,23 @@
 					this.setFilterValue("type", val);
 				}
 			},
+			manualFiltersNoArchived: {
+				get() {
+					return !this.manualFilters?.show_archived;
+				},
+				set(val) {
+					this.setFilterValue("show_archived", val ? undefined : 1);
+				}
+			},
+			manualFiltersApprovedOnly: {
+				get() {
+					let val = this.manualFilters?.approved_only;
+					return (val == null) ? true : val;
+				},
+				set(val) {
+					this.setFilterValue("approved_only", val);
+				}
+			},
 			actualFilters() {
 				const result = {};
 				if (this.manualFilters) {
@@ -131,8 +158,8 @@
 		methods: {
 			setFilterValue(prop, val) {
 				const newFiler = this.manualFilters ? Object.assign({}, this.manualFilters) : {};
-				if ((val || "") !== (newFiler[prop] || "")) {
-					if (val) {
+				if ((val == null ? "" : val) !== (newFiler[prop] == null ? "" : newFiler[prop])) {
+					if (val != null) {
 						newFiler[prop] = val;
 					} else {
 						delete newFiler[prop];

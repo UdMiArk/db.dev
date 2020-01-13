@@ -123,6 +123,10 @@ class ResourcesController extends BackendController {
 				$query->orderBy(['product.name' => $dir]);
 			},
 		];
+		$listProcessor->defaultFilters = [
+			'show_archived' => 0,
+			'approved_only' => 1,
+		];
 		$listProcessor->filterHandlers = [
 			'product' => function ($query, $value) {
 				/* @var \yii\db\Query $query */
@@ -148,6 +152,18 @@ class ResourcesController extends BackendController {
 				if ($value) {
 					/* @var \yii\db\Query $query */
 					$query->andWhere(['resource.user_id' => \Yii::$app->user->id]);
+				}
+			},
+			'show_archived' => function ($query, $value) {
+				if (!$value) {
+					/* @var \yii\db\Query $query */
+					$query->andWhere(['resource.archived' => EArchiveStatus::NOT_ARCHIVED]);
+				}
+			},
+			'approved_only' => function ($query, $value) {
+				if ($value) {
+					/* @var \yii\db\Query $query */
+					$query->andWhere(['resource.status' => EResourceStatus::APPROVED]);
 				}
 			},
 		];

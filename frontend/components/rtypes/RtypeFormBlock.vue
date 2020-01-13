@@ -14,6 +14,13 @@
 				<b-input :disabled="processing" :readonly="readonly" name="name" required v-model="props.name"/>
 			</b-field>
 			<b-field
+					:message="errors && errors.group_name"
+					:type="errors && errors.group_name && 'is-danger'"
+					label="Группа"
+			>
+				<b-input :disabled="processing" :readonly="readonly" name="group_name" v-model="props.group_name"/>
+			</b-field>
+			<b-field
 					:message="errors && errors.responsible_id"
 					:type="errors && errors.responsible_id && 'is-danger'"
 					label="Ответственный"
@@ -25,6 +32,13 @@
 						:value="getResponsibleUser(props.responsible_id)"
 						@input="props.responsible_id = $event ? $event.__id : null"
 				/>
+			</b-field>
+			<b-field
+					:message="errors && errors.description_link"
+					:type="errors && errors.description_link && 'is-danger'"
+					label="Ссылка на описание"
+			>
+				<b-input :disabled="processing" :readonly="readonly" name="description_link" v-model="props.description_link"/>
 			</b-field>
 			<b-field
 					:message="errors && errors.description"

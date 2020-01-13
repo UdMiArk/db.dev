@@ -13,6 +13,7 @@ use yii\db\AfterSaveEvent;
  *
  * @property integer $id
  * @property string $name
+ * @property string $group_name
  * @property string $description
  * @property string $description_link
  * @property boolean $disabled
@@ -31,6 +32,7 @@ class ResourceType extends CommonRecord {
 	public function attributeLabels() {
 		return [
 			'name' => "Имя",
+			'group_name' => "Группа",
 			'description' => "Описание",
 			'description_link' => "Ссылка на описание",
 			'disabled' => "Отключен",
@@ -42,8 +44,8 @@ class ResourceType extends CommonRecord {
 	public function rules() {
 		$formScenarios = [$this::SCENARIO_CREATE, $this::SCENARIO_UPDATE];
 		return array_merge(parent::rules(), [
-			[['name', 'description', 'description_link'], 'trim', 'on' => $formScenarios],
-			[['name', 'description', 'description_link'], 'string', 'on' => $formScenarios],
+			[['name', 'description', 'description_link', 'group_name'], 'trim', 'on' => $formScenarios],
+			[['name', 'description', 'description_link', 'group_name'], 'string', 'on' => $formScenarios],
 			[['name'], 'required', 'on' => $formScenarios],
 			[['responsible_id'], 'exist', 'targetRelation' => 'responsible', 'on' => $formScenarios],
 			[['typeAttributes'], 'ruleValidateTypeAttributes', 'skipOnEmpty' => false, 'on' => $formScenarios],
@@ -196,6 +198,7 @@ class ResourceType extends CommonRecord {
 	public function getFrontendInfo($withAttributes = false) {
 		$result = array_merge(parent::getFrontendInfo(), [
 			'name' => $this->name,
+			'group_name' => $this->group_name,
 			'description' => $this->description,
 			'description_link' => $this->description_link,
 			'responsible_id' => $this->responsible_id,

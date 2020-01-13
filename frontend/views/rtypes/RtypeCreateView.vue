@@ -28,6 +28,7 @@
 			defaultValues() {
 				return Object.freeze({
 					name: "",
+					description_link: "",
 					description: "",
 					responsible_id: null,
 					typeAttributes: null

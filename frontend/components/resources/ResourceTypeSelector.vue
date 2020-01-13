@@ -1,11 +1,16 @@
 <template>
-	<ul class="app-resourcetypeselector">
-		<li class="app-resourcetypeselector__item-wrapper" v-for="item in items">
-			<button :dataId.prop="item.__id" :title="item.description" @click="handleItemClick" class="app-resourcetypeselector__item" type="button">
-				<span class="app-resourcetypeselector__item-name">{{item.name}}</span>
-			</button>
-		</li>
-	</ul>
+	<div :class="$style.host">
+		<div :class="$style.group" :key="group.name" v-for="group in groups">
+			<h5 :class="$style.group_title">{{group.name}}</h5>
+			<ul :class="$style.list">
+				<li :class="$style.list_item_wrapper" :key="item.__id" v-for="item in group.items">
+					<button :class="$style.list_item" :dataId.prop="item.__id" :title="item.description" @click="handleItemClick" type="button">
+						<span :class="$style.list_item_name">{{item.name}}</span>
+					</button>
+				</li>
+			</ul>
+		</div>
+	</div>
 </template>
 
 <script>
@@ -17,6 +22,21 @@
 				required: true
 			}
 		},
+		computed: {
+			groups() {
+				const resultMap = {};
+				for (const item of this.items) {
+					if (!resultMap[item.group_name]) {
+						resultMap[item.group_name] = [];
+					}
+					resultMap[item.group_name].push(item);
+				}
+				return Object.freeze(Object.keys(resultMap).sort().map(x => Object.freeze({
+					name: x,
+					items: Object.freeze(resultMap[x])
+				})));
+			}
+		},
 		methods: {
 			handleItemClick(ev) {
 				this.$emit("select", ev.target.closest("button").dataId);
@@ -25,38 +45,52 @@
 	};
 </script>
 
-<style lang="scss">
-	.app-resourcetypeselector {
-		$padding: 0.5rem;
-		$width: 8rem;
+<style lang="scss" module>
+	$padding: 0.5rem;
+	$width: 8rem;
 
+	.host {
+
+	}
+
+	.group {
+		margin-bottom: 1rem;
+	}
+
+	.group_title {
+		font-weight: bold;
+		font-size: 1rem;
+		margin-bottom: 0.2rem;
+	}
+
+	.list {
 		display: block;
 
 		list-style: none;
 		margin: -$padding;
+	}
 
-		&__item {
-			display: block;
+	.list_item_wrapper {
+		display: inline-block;
+		width: $width + $padding * 2;
+		padding: $padding;
+		margin: 0;
 
-			margin: 0;
-			padding: 0.5rem;
-			height: $width;
+		vertical-align: top;
+	}
 
-			cursor: pointer;
-			width: 100%;
+	.list_item {
+		display: block;
 
-			&-wrapper {
-				display: inline-block;
-				width: $width + $padding * 2;
-				padding: $padding;
-				margin: 0;
+		margin: 0;
+		padding: 0.5rem;
+		height: $width / 2;
 
-				vertical-align: top;
-			}
+		cursor: pointer;
+		width: 100%;
+	}
 
-			&-name {
-				font-size: 1rem;
-			}
-		}
+	.list_item_name {
+		font-size: 1rem;
 	}
 </style>

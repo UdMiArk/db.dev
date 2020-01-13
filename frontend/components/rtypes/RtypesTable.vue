@@ -23,6 +23,7 @@
 			narrowed
 	>
 		<template #default="{row}">
+			<b-table-column field="group_name" label="Группа" sortable>{{row.group_name}}</b-table-column>
 			<b-table-column field="name" label="Название" sortable>{{row.name}}</b-table-column>
 			<b-table-column field="responsible" label="Ответственный" sortable>{{row.responsible | user}}</b-table-column>
 			<b-table-column field="description" label="Описание">
