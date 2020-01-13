@@ -3,16 +3,21 @@
 		<template #header>
 			<div>
 				<b-button :to="{name: 'resourceCreate'}" class="is-pulled-right is-primary" outlined tag="router-link">Добавить ресурс</b-button>
-				<b-dropdown aria-role="list" class="mr-sm" multiple v-if="existingTypes" v-model="manualFiltersTypeId">
+				<b-dropdown aria-role="list" class="mr-sm" id="typesDropdown" multiple v-if="existingTypeGroups" v-model="manualFiltersTypeId">
 					<template #trigger>
 						<button class="button" type="button">
 							<span>Типы (Выбрано: {{manualFiltersTypeId ? manualFiltersTypeId.length : "любой"}})</span>
 							<b-icon icon="menu-down"/>
 						</button>
 					</template>
-					<b-dropdown-item :key="type.__id" :value="type.__id" aria-role="listitem" v-for="type in existingTypes">
-						<span>{{type.name}}</span>
-					</b-dropdown-item>
+					<template v-for="typeGroup in existingTypeGroups">
+						<b-dropdown-item :key="typeGroup.name" aria-role="listitem" custom>
+							<b>{{typeGroup.name}}</b>
+						</b-dropdown-item>
+						<b-dropdown-item :key="type.__id" :value="type.__id" aria-role="listitem" class="pl-lg" v-for="type in typeGroup.items">
+							<span>{{type.name}}</span>
+						</b-dropdown-item>
+					</template>
 				</b-dropdown>
 				<input class="input is-inline mr-sm" placeholder="Тип" type="text" v-else v-model.lazy="manualFiltersType"/>
 				<input class="input is-inline mr-sm" placeholder="Создатель" type="text" v-if="showUser" v-model.lazy="manualFiltersUser"/>
@@ -62,7 +67,7 @@
 	import ResourcesTable from "@components/resources/ResourcesTable";
 	import DataList from "@components/actions/DataList";
 	import {ensureRegistered as ensureResourcesModuleRegistered, MODULE_NAME} from "@/store/module-resources";
-	import {mapState} from "vuex";
+	import {mapGetters} from "vuex";
 
 	const DEFAULT_PAGE = 1;
 
@@ -86,7 +91,7 @@
 			};
 		},
 		computed: {
-			...mapState(MODULE_NAME, ["existingTypes"]),
+			...mapGetters(MODULE_NAME, ["existingTypeGroups"]),
 			manualFiltersTypeId: {
 				get() {
 					return this.manualFilters?.type_id || null;
@@ -188,3 +193,11 @@
 		}
 	};
 </script>
+
+<style lang="css">
+	/*noinspection CssUnusedSymbol*/
+	#typesDropdown .dropdown-content {
+		max-height: 20rem;
+		overflow: auto;
+	}
+</style>

@@ -21,6 +21,24 @@ const MODULE = {
 			state.error = error;
 		}
 	},
+	getters: {
+		existingTypeGroups({existingTypes}) {
+			if (!existingTypes) {
+				return null;
+			}
+			const resultMap = {};
+			for (const item of existingTypes) {
+				if (!resultMap[item.group_name]) {
+					resultMap[item.group_name] = [];
+				}
+				resultMap[item.group_name].push(item);
+			}
+			return Object.freeze(Object.keys(resultMap).sort().map(x => Object.freeze({
+				name: x,
+				items: Object.freeze(resultMap[x])
+			})));
+		}
+	},
 	actions: {
 		refreshExistingTypes({commit}) {
 			commit("startRequesting");
