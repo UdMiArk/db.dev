@@ -1,6 +1,6 @@
 <template>
 	<BaseViewContainer>
-		<div v-if="isLoggedIn">Привет, {{userName}}</div>
+		<DashboardBlock v-if="isLoggedIn"/>
 		<LoginForm v-else/>
 	</BaseViewContainer>
 </template>
@@ -9,10 +9,11 @@
 	import {mapGetters} from "vuex";
 	import BaseViewContainer from "@components/BaseViewContainer";
 	import LoginForm from "@components/actions/LoginForm";
+	import DashboardBlock from "@components/DashboardBlock";
 
 	export default {
 		name: "HomeView",
-		components: {LoginForm, BaseViewContainer},
+		components: {DashboardBlock, LoginForm, BaseViewContainer},
 		computed: {
 			...mapGetters("auth", ["isLoggedIn", "userName"])
 		}

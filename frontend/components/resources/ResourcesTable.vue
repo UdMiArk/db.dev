@@ -5,7 +5,7 @@
 			:currentPage="currentPage"
 			:data="data"
 			:loading="loading"
-			:paginated="paginated"
+			:paginated="paginated && (currentPage !== 1 || (total > perPage))"
 			:perPage="perPage"
 			:total="total"
 			:row-class="() => 'is-clickable'"

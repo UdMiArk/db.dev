@@ -51,6 +51,7 @@
 						<b-button @click="reloadData" class="is-pulled-right" icon-left="reload" size="is-small" title="Перезагрузить" type="is-primary"/>
 						{{error.message || error}}
 					</div>
+					<slot :manualFilters="manualFilters" name="empty" v-else/>
 				</template>
 			</ResourcesTable>
 		</template>
@@ -187,7 +188,3 @@
 		}
 	};
 </script>
-
-<style lang="scss">
-
-</style>
