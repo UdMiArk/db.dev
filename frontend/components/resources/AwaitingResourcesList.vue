@@ -20,6 +20,7 @@
 					backendSorting
 					paginated
 					withProduct
+					withModerator
 			>
 				<template #empty>
 					<div class="box has-background-warning" v-if="error">

@@ -23,6 +23,7 @@
 					backendSorting
 					paginated
 					withProduct
+					:withModerator="!showOnlyMine"
 			>
 				<template #empty>
 					<div class="box has-background-warning" v-if="error">

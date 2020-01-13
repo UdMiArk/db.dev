@@ -171,6 +171,7 @@ class ResourcesController extends BackendController {
 		$query = Resource::find()
 			->alias('resource')
 			->innerJoinWith(['user user', 'product product', 'type type'])
+			->with('statusBy')
 			->orderBy(['resource.created_at' => SORT_DESC]);
 
 		$listProcessor->apply($query);
@@ -187,6 +188,11 @@ class ResourcesController extends BackendController {
 			},
 			'user' => function ($item) {
 				return $item->user->getFrontendInfo();
+			},
+			'status_by' => function ($item) {
+				/* @var $item Resource */
+				$user = $item->statusBy;
+				return $user ? $user->getFrontendInfo() : null;
 			},
 			'product' => function ($item) {
 				return $item->product->getFrontendInfo();

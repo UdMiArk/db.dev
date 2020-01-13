@@ -25,6 +25,7 @@
 		<template #default="{row}">
 			<b-table-column field="created_at" label="Добавлен" sortable width="100">{{row.created_at | parseDate | date}}</b-table-column>
 			<b-table-column :visible="withUser" field="user" label="Создатель">{{row.user | user}}</b-table-column>
+			<b-table-column :visible="withModerator" field="status_by" label="Модератор">{{row.status_by | user}}</b-table-column>
 			<b-table-column :visible="withProduct" field="product" label="Объект продвижения" sortable>{{row.product.name}}</b-table-column>
 			<b-table-column field="type" label="Тип">{{row.type.name}}</b-table-column>
 			<b-table-column field="name" label="Название" sortable>{{row.name}}</b-table-column>
@@ -58,6 +59,7 @@
 			withUser: Boolean,
 			withProduct: Boolean,
 			withStatus: Boolean,
+			withModerator: Boolean,
 			withArchived: Boolean,
 			backendSorting: Boolean,
 			backendPagination: Boolean,
