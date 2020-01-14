@@ -24,6 +24,7 @@
 				if (permissions.canViewResources) {
 					result.push(Object.freeze({
 						icon: "database-search",
+						iconSrc: require("../../assets/images/icon_db.png"),
 						label: "Ресурсы",
 						route: {name: "resourcesList"}
 					}));
@@ -31,6 +32,7 @@
 				if (permissions.canManageResourceTypes) {
 					result.push(Object.freeze({
 						icon: "settings",
+						iconSrc: require("../../assets/images/icon_cog.png"),
 						label: "Типы ресурсов",
 						route: {name: "rtypesList"}
 					}));
@@ -38,6 +40,7 @@
 				if (permissions.canManageUsers) {
 					result.push(Object.freeze({
 						icon: "account-group",
+						iconSrc: require("../../assets/images/icon_users.png"),
 						label: "Пользователи",
 						route: {name: "usersList"}
 					}));

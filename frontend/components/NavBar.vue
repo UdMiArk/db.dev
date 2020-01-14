@@ -12,15 +12,18 @@
 			<template v-for="item in navItems">
 				<b-navbar-dropdown :key="item.label" v-if="item.children">
 					<template #label>
-						<b-icon :icon="item.icon" class="mr-xs" v-if="item.icon"/>
+						<img :src="item.iconSrc" class="mr-xs" v-if="item.iconSrc && useIconSrc">
+						<b-icon :icon="item.icon" class="mr-xs" v-else-if="item.icon"/>
 						<span> {{item.label}}</span></template>
 					<b-navbar-item :href="subitem.href" :key="subitem.label" :tag="subitem.route ? 'router-link' : undefined" :to="subitem.route" v-for="subitem in item.children">
-						<b-icon :icon="subitem.icon" class="mr-xs" v-if="subitem.icon"/>
+						<img :src="item.iconSrc" class="mr-xs" v-if="subitem.iconSrc && useIconSrc">
+						<b-icon :icon="subitem.icon" class="mr-xs" v-else-if="subitem.icon"/>
 						<span> {{subitem.label}}</span>
 					</b-navbar-item>
 				</b-navbar-dropdown>
 				<b-navbar-item :active="isActive(item)" :href="item.href" :key="item.label" :tag="item.route ? 'router-link' : undefined" :to="item.route" v-else>
-					<b-icon :icon="item.icon" class="mr-xs" v-if="item.icon"/>
+					<img :src="item.iconSrc" class="mr-xs" v-if="item.iconSrc && useIconSrc">
+					<b-icon :icon="item.icon" class="mr-xs" v-else-if="item.icon"/>
 					<span> {{item.label}}</span>
 				</b-navbar-item>
 			</template>
@@ -42,7 +45,10 @@
 			navItems: Array
 		},
 		computed: {
-			...mapGetters("auth", ["isLoggedIn", "userName"])
+			...mapGetters("auth", ["isLoggedIn", "userName"]),
+			useIconSrc() {
+				return true;
+			}
 		},
 		methods: {
 			...mapMutations("auth", ["setAuthData"]),

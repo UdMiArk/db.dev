@@ -1,4 +1,12 @@
+$green: #008f86;
+$primary: $green;
+$menu-item-active-background-color: $primary;
+$dropdown-item-active-background-color: $primary;
+
 @import "~bulma/sass/utilities/_all.sass";
+
+//noinspection CssInvalidFunction
+$primary-invert: findColorInvert($primary);
 
 $table-row-hover-background-color: $grey-lighter;
 
