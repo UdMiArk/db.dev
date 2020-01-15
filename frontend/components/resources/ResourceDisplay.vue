@@ -43,7 +43,7 @@
 			<div class="columns is-multiline">
 				<div class="column is-one-quarter-desktop is-half">
 					<b-field label="Статус">
-						<b-input :value="data.status | enumLabel($STATUSES)" readonly/>
+						<b-input :title="data | statusTitle" :value="data.status | enumLabel($STATUSES)" readonly/>
 					</b-field>
 				</div>
 				<div class="column is-one-quarter-desktop is-half">
@@ -88,6 +88,7 @@
 	import ResourceDataDisplayBlock from "@components/resources/ResourceDataDisplayBlock";
 	import {ARCHIVE_STATUS, RESOURCE_STATUS} from "@/data/resources";
 	import {getApiResourceArchiveLink} from "@plugins/api";
+	import {formatDate, parseServerDate} from "@plugins/datetime";
 
 	export default {
 		name: "ResourceDisplay",
@@ -118,6 +119,15 @@
 					return getApiResourceArchiveLink(this.data.__id);
 				}
 				return undefined;
+			}
+		},
+		filters: {
+			statusTitle(data) {
+				if (data.status) {
+					return formatDate(parseServerDate(data.status_at)) + ", модератор: " + data.statusBy.name;
+				} else if (data.statusBy) {
+					return "Назначен модератор: " + data.statusBy.name;
+				}
 			}
 		},
 		created() {
