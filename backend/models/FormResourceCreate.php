@@ -154,7 +154,7 @@ class FormResourceCreate extends FormModel {
 			$resource->name = $this->name;
 			$resource->comment = $this->comment;
 			$resource->path = $resource->generatePath();
-			if (\Yii::$app->authManager->checkAccess($resource->user_id, $resource::RBAC_APPROVE)) {
+			if (\Yii::$app->authManager->checkAccess($resource->user_id, $resource::RBAC_AUTO_APPROVE)) {
 				$resource->status = EResourceStatus::APPROVED;
 				$resource->status_by = $resource->user_id;
 			} else {

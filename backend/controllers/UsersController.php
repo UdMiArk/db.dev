@@ -157,6 +157,8 @@ class UsersController extends BackendController {
 					return "Администратор";
 				} elseif ($authManager->checkAccess($userId, Resource::RBAC_APPROVE)) {
 					return "Модератор";
+				} elseif ($authManager->checkAccess($userId, Resource::RBAC_AUTO_APPROVE)) {
+					return "Доверенный пользователь";
 				} else {
 					return null;
 				}

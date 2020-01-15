@@ -124,7 +124,10 @@
 		filters: {
 			statusTitle(data) {
 				if (data.status) {
-					return formatDate(parseServerDate(data.status_at)) + ", модератор: " + data.statusBy.name;
+					return (
+						formatDate(parseServerDate(data.status_at)) + ", "
+						+ (RESOURCE_STATUS.APPROVED ? "одобрил" : "отклонил")
+						+ ": " + data.statusBy.name);
 				} else if (data.statusBy) {
 					return "Назначен модератор: " + data.statusBy.name;
 				}

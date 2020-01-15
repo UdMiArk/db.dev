@@ -50,6 +50,7 @@ class Resource extends CommonRecord {
 	const RBAC_UPDATE = 'app.resource.update';
 	const RBAC_DELETE = 'app.resource.delete';
 	const RBAC_APPROVE = 'app.resource.approve';
+	const RBAC_AUTO_APPROVE = 'app.resource.approve_own';
 	const RBAC_ARCHIVE = 'app.resource.archive';
 
 	const RBAC_ROLE_MODERATOR = 'app.resource.moderator';
