@@ -4,10 +4,13 @@
 namespace common\components;
 
 
+use common\models\Resource;
 use common\models\User;
 use yii\helpers\Json;
 
 class ProductAccessibilityHelper {
+	const TRUSTED_USER_KEY = 'trusted';
+
 	public static function getConfig() {
 		return @\Yii::$app->params['resourcesServer'];
 	}
@@ -69,7 +72,12 @@ class ProductAccessibilityHelper {
 	}
 
 	public static function getAvailableProducts(User $user, &$errors = []) {
-		if (!$user->sc_key) {
+		$isUserTrusted = \Yii::$app->authManager->checkAccess(
+			$user->primaryKey,
+			Resource::RBAC_AUTO_APPROVE
+		);
+
+		if (!$isUserTrusted && !$user->sc_key) {
 			$checkData = static::_requestUserCheck($user->email);
 			if (!($checkData && $checkData['found'])) {
 				$errors['not_found'] = "Не удалось определить пользователя SC";
@@ -83,7 +91,11 @@ class ProductAccessibilityHelper {
 			$user->update();
 		}
 
-		$productsResponse = static::_requestUserProducts($user->sc_key);
+		$productsResponse = static::_requestUserProducts(
+			$isUserTrusted
+				? static::TRUSTED_USER_KEY
+				: $user->sc_key
+		);
 		if (!($productsResponse && $productsResponse['user_found'])) {
 			$errors['not_found'] = "Связанный пользователь SC не найден";
 			$user->sc_key = null;
