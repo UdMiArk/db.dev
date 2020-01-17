@@ -1,6 +1,6 @@
 <template>
 	<BaseViewContainer>
-		<LoginForm/>
+		<LoginForm :back="qBack"/>
 	</BaseViewContainer>
 </template>
 
@@ -10,6 +10,9 @@
 
 	export default {
 		name: "LoginView",
-		components: {LoginForm, BaseViewContainer}
+		components: {LoginForm, BaseViewContainer},
+		props: {
+			qBack: String
+		}
 	};
 </script>

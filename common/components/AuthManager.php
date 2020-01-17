@@ -7,6 +7,9 @@ class AuthManager extends \yii\rbac\DbManager {
 	const ROLE_SUPERUSER = \common\data\RBACData::ROLE_SUPERUSER;
 
 	public function checkAccess($userId, $permissionName, $params = []) {
+		if ($userId === null) {
+			return false;
+		}
 		if ($permissionName !== $this::ROLE_SUPERUSER && $this->checkAccess($userId, $this::ROLE_SUPERUSER)) {
 			return true;
 		}

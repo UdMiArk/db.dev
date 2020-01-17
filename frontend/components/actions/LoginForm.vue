@@ -41,6 +41,9 @@
 	export default {
 		name: "LoginForm",
 		components: {BaseForm},
+		props: {
+			back: String
+		},
 		data() {
 			return {
 				processing: false,
@@ -48,7 +51,7 @@
 			};
 		},
 		computed: {
-			...mapState("auth", {availableDomains: "domains"}),
+			...mapState("auth", {availableDomains: "domains", "isSimpleUser": "simpleUser"}),
 			defaultValues() {
 				return Object.freeze({
 					domain: this.availableDomains && this.availableDomains.length && this.availableDomains[0].value,
@@ -67,6 +70,7 @@
 					.then(({data}) => {
 						if (data.success) {
 							this.setAuthData(data.auth);
+							this.$router.replace(this.back || {name: this.isSimpleUser ? "resourcesList" : "home"});
 						} else {
 							this.errors = Object.freeze(data.errors);
 						}

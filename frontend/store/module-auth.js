@@ -1,11 +1,17 @@
 import {apiFetch} from "@/plugins/api";
 
+let resolveAuthInit,
+	rejectAuthInit;
+
+export const onAuthInitialized = new Promise((res) => resolveAuthInit = res);
+
 export default {
 	namespaced: true,
 	state: {
 		csrfToken: null,
 		domains: null,
 		user: null,
+		simpleUser: null,
 		permissions: Object.freeze({}),
 		authenticated: null,
 		isRequestingInfo: false,
@@ -20,7 +26,12 @@ export default {
 			state.user = data.authenticated ? Object.freeze(data.user) : null;
 			state.permissions = Object.freeze(data.permissions || {});
 			state.domains = Object.freeze(data.domains || []);
+			state.simpleUser = data.simpleUser;
 			state.authenticated = !!state.user;
+			if (resolveAuthInit) {
+				resolveAuthInit();
+				resolveAuthInit = null;
+			}
 		},
 		startRequesting(state) {
 			state.isRequestingInfo = true;
@@ -38,6 +49,10 @@ export default {
 				.then(data => (commit("setAuthData", data), commit("endRequesting")))
 				.catch(err => {
 					commit("endRequesting", err);
+					if (resolveAuthInit) {
+						resolveAuthInit();
+						resolveAuthInit = null;
+					}
 					throw err;
 				});
 		}

@@ -40,13 +40,15 @@ class ResourcesController extends BackendController {
 					'creation-data' => ['GET'],
 					'existing-types' => ['GET'],
 
+					'test' => ['GET'],
+
 					'*' => ['POST'],
 				],
 			],
 		]);
 		$behaviors['access']['rules'] = array_merge([
 			[
-				'actions' => ['view', 'markets', 'structure', 'list', 'existing-types'],
+				'actions' => ['view', 'markets', 'structure', 'list', 'existing-types', 'test'],
 				'permissions' => [Resource::RBAC_VIEW],
 				'allow' => true,
 			],
@@ -62,7 +64,7 @@ class ResourcesController extends BackendController {
 			],
 			[
 				'actions' => ['delete'],
-				'permissions' => [Resource::RBAC_DELETE],
+				'permissions' => [Resource::RBAC_DELETE, Resource::RBAC_CREATE],
 				'allow' => true,
 			],
 			[
@@ -78,6 +80,10 @@ class ResourcesController extends BackendController {
 		], $behaviors['access']['rules']);
 
 		return $behaviors;
+	}
+
+	public function actionTest() {
+		return $this->asJson(\Yii::$app->authManager->checkAccess(null, Resource::RBAC_VIEW));
 	}
 
 	public function actionMarkets() {

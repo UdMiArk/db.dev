@@ -1,7 +1,7 @@
 <template>
 	<BaseViewContainer>
 		<DashboardBlock v-if="isLoggedIn"/>
-		<LoginForm v-else/>
+		<LoginForm :back="qBack" v-else/>
 	</BaseViewContainer>
 </template>
 
@@ -14,6 +14,9 @@
 	export default {
 		name: "HomeView",
 		components: {DashboardBlock, LoginForm, BaseViewContainer},
+		props: {
+			qBack: String
+		},
 		computed: {
 			...mapGetters("auth", ["isLoggedIn", "userName"])
 		}

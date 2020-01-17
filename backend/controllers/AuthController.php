@@ -81,6 +81,11 @@ class AuthController extends BackendController {
 				],
 				'permissions' => $this->_getBasePermissions($user),
 			]);
+			$result['simpleUser'] = !(
+				@$result['canModerateResources']
+				||
+				Resource::find()->andWhere(['user_id' => $identity->primaryKey])->exists()
+			);
 		}
 		return $result;
 	}
