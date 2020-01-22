@@ -47,6 +47,9 @@
 			>
 				<b-input :disabled="processing" :readonly="readonly" name="description" type="textarea" v-model="props.description"/>
 			</b-field>
+			<div class="box has-background-warning" v-if="!readonly && readonlyFields">
+				Для этого типа уже существуют ресурсы, поэтому вы не можете изменять поля ресурсов.
+			</div>
 			<RtypeAttributesEditBlock
 					:changed="changes && changes.typeAttributes"
 					:disabled="processing"
