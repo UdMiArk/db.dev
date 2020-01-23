@@ -57,6 +57,16 @@
 					</b-field>
 				</div>
 			</div>
+			<div class="columns" v-if="data.status_comment">
+				<div class="column">
+					<div class="box">
+						<div class="field">
+							<span class="label">Комментарий к {{data.status === $STATUSES.REJECTED ? "отказу" : "статусу"}}</span>
+							<p style="white-space: pre-wrap">{{data.status_comment}}</p>
+						</div>
+					</div>
+				</div>
+			</div>
 			<template v-if="archivedData">
 				<div class="box has-background-warning" v-if="awaitingArchivation">
 					В данный момент ресурс находится в просессе архивации/деархивации и его хранилище не доступно
@@ -69,6 +79,16 @@
 					Вы можете скачать все его данные одним файлом, скачивание отдельных файлов отключено.
 					<div class="has-text-centered pt-md">
 						<b-button :href="archiveLink" download icon-left="package-down" tag="a">Скачать архив</b-button>
+					</div>
+				</div>
+				<div class="columns" v-if="data.archived_comment">
+					<div class="column">
+						<div class="box">
+							<div class="field">
+								<label class="label">Комментарий к архивации</label>
+								<p style="white-space: pre-wrap">{{data.archived_comment}}</p>
+							</div>
+						</div>
 					</div>
 				</div>
 			</template>
@@ -126,7 +146,7 @@
 				if (data.status) {
 					return (
 						formatDate(parseServerDate(data.status_at)) + ", "
-						+ (RESOURCE_STATUS.APPROVED ? "одобрил" : "отклонил")
+						+ (data.status === RESOURCE_STATUS.APPROVED ? "одобрил" : "отклонил")
 						+ ": " + data.statusBy.name);
 				} else if (data.statusBy) {
 					return "Назначен модератор: " + data.statusBy.name;

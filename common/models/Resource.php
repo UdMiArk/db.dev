@@ -34,6 +34,8 @@ use yii\helpers\Json;
  * @property string $name
  * @property integer $status
  * @property integer $archived
+ * @property string $status_comment
+ * @property string $archived_comment
  * @property string $path
  * @property string $comment
  *
@@ -119,6 +121,7 @@ class Resource extends CommonRecord {
 			switch (intval($this->archived)) {
 				case EArchiveStatus::NOT_ARCHIVED:
 					$this->archived_at = null;
+					$this->archived_comment = null;
 					break;
 				case EArchiveStatus::ARCHIVED:
 					$this->archived_at = date('Y-m-d H:i:s', time());
@@ -148,6 +151,8 @@ class Resource extends CommonRecord {
 			'name' => "Имя",
 			'status' => "Статус",
 			'archived' => "В архиве",
+			'status_comment' => "Комментарий к статусу",
+			'archived_comment' => "Комментарий к архивации",
 			'path' => "Путь",
 			'comment' => "Комментарий",
 		];
@@ -203,7 +208,9 @@ class Resource extends CommonRecord {
 			'archived_queue' => $this->archived_queue,
 			'name' => $this->name,
 			'status' => $this->status,
+			'status_comment' => $this->status_comment,
 			'archived' => $this->archived,
+			'archived_comment' => $this->archived_comment,
 			'comment' => $this->comment,
 			'data' => $this->data,
 		]);

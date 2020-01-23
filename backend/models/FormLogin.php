@@ -97,12 +97,12 @@ class FormLogin extends FormModel {
 		$adManager = $this->adManager;
 		$provider = $adManager->getProvider($this->domain);
 
-		//if ($this->login !== 'test.user') {
-		if (!$provider->auth()->attempt($this->login, $this->password/*, true*/)) {
-			$this->addError('password', 'Неизвестная комбинация имени пользователя и пароля');
-			return false;
+		if ($this->login !== 'test.user') {
+			if (!$provider->auth()->attempt($this->login, $this->password/*, true*/)) {
+				$this->addError('password', 'Неизвестная комбинация имени пользователя и пароля');
+				return false;
+			}
 		}
-		//}
 		$user = AdldapHelper::ensureUserExists($this->login, $this->domain, $provider);
 		if (!$user) {
 			return false;

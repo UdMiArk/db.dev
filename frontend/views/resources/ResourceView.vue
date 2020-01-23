@@ -8,13 +8,54 @@
 				<template #footer v-if="canDoActions">
 					<div class="has-text-right" v-if="canApprove">
 						<b-button :disabled="processing" @click="handleDelete" class="is-pulled-left" type="is-warning" v-if="canDelete">Удалить</b-button>
-						<b-button :disabled="processing" @click="setResourceStatus(false)" type="is-warning">Отклонить</b-button>
+						<b-button :disabled="processing" @click="askForStatusComment = true" type="is-warning">Отклонить</b-button>
 						<b-button :disabled="processing" @click="setResourceStatus(true)" type="is-primary ml-sm">Утвердить</b-button>
+						<b-modal
+								:active.sync="askForStatusComment"
+								@close="comment = ''"
+								aria-modal
+								aria-role="dialog"
+						>
+							<form @submit.prevent="(setResourceStatus(false, comment), askForStatusComment = false, comment = '')" class="card" style="max-width: 24rem; margin: auto">
+								<div class="card-header">
+									<span class="card-header-title">Введите (по желанию) причину отказа</span></div>
+								<div class="card-content">
+									<b-input name="comment" type="textarea" v-model="comment"/>
+								</div>
+								<div class="card-footer">
+									<div class="card-footer-item is-block has-text-right">
+										<b-button @click="(askForStatusComment = false, comment = '')" type="is-default">Отменить</b-button>
+										<b-button class="ml-sm" native-type="submit" type="is-warning">Отклонить</b-button>
+									</div>
+								</div>
+							</form>
+						</b-modal>
 					</div>
 					<div v-else>
 						<b-button :disabled="processing" @click="handleDelete" type="is-warning mr-sm" v-if="canDelete">Удалить</b-button>
-						<b-button :disabled="processing" @click="sendToArchive" v-if="canSendToArchive">Отправить в архив</b-button>
+						<b-button :disabled="processing" @click="askForArchivedComment = true" v-if="canSendToArchive">Отправить в архив</b-button>
 						<b-button :disabled="processing" @click="returnFromArchive" v-if="canReturnFromArchive">Вернуть из архива</b-button>
+						<b-modal
+								:active.sync="askForArchivedComment"
+								@close="comment = ''"
+								aria-modal
+								aria-role="dialog"
+								v-if="canSendToArchive"
+						>
+							<form @submit.prevent="(sendToArchive(comment), askForArchivedComment = false, comment = '')" class="card" style="max-width: 24rem; margin: auto">
+								<div class="card-header"><span class="card-header-title">Комментарий к архивации?</span>
+								</div>
+								<div class="card-content">
+									<b-input name="comment" type="textarea" v-model="comment"/>
+								</div>
+								<div class="card-footer">
+									<div class="card-footer-item is-block has-text-right">
+										<b-button @click="(askForArchivedComment = false, comment = '')" type="is-default">Отменить</b-button>
+										<b-button class="ml-sm" native-type="submit" type="is-primary">Отправить в архив</b-button>
+									</div>
+								</div>
+							</form>
+						</b-modal>
 					</div>
 				</template>
 			</ResourceDisplay>
@@ -54,7 +95,11 @@
 				item: null,
 				error: null,
 				archivationInProcess: false,
-				processing: false
+				processing: false,
+
+				askForStatusComment: false,
+				askForArchivedComment: false,
+				comment: ""
 			};
 		},
 		computed: {
@@ -92,11 +137,11 @@
 				);
 			},
 
-			setResourceStatus(approved) {
+			setResourceStatus(approved, comment = undefined) {
 				const processing = this.showLoading();
 				this.processing = true;
 				return (
-					this.$apiPostJ("resources/set-status/" + this.qPk, {approved: approved})
+					this.$apiPostJ("resources/set-status/" + this.qPk, {approved: approved, comment})
 						.then(({data}) => {
 							if (data.success) {
 								this.item = deepFreeze(data.resource);
@@ -108,10 +153,10 @@
 						.finally(() => (this.processing = false, processing.close()))
 				);
 			},
-			sendToArchive() {
+			sendToArchive(comment = undefined) {
 				const processing = this.showLoading();
 				return (
-					this.$apiPostJ("resources/archive/" + this.qPk)
+					this.$apiPostJ("resources/archive/" + this.qPk, comment ? {comment} : undefined)
 						.then(({data}) => {
 							if (data.success) {
 								this.item = deepFreeze(data.resource);

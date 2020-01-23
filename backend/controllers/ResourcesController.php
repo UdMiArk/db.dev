@@ -260,12 +260,14 @@ class ResourcesController extends BackendController {
 
 	public function actionSetStatus($id) {
 		$approved = !!$this->request->post('approved');
+		$comment = trim($this->request->post('comment'));
 		$item = $this->_getRequestItem($id);
 		if ($item->status !== EResourceStatus::AWAITING) {
 			throw new BadRequestHttpException("Статус ресурса уже выставлен");
 		}
 		$item->status = $approved ? EResourceStatus::APPROVED : EResourceStatus::REJECTED;
 		$item->status_by = $this->user->primaryKey;
+		$item->status_comment = empty($comment) ? null : $comment;
 		if (!$item->update()) {
 			throw new BadRequestHttpException($item->getFirstError());
 		}
@@ -278,9 +280,11 @@ class ResourcesController extends BackendController {
 		if ($resource->archived !== EArchiveStatus::NOT_ARCHIVED) {
 			throw new BadRequestHttpException("Ресурс уже находится в архиве или на пути в него");
 		}
+		$comment = trim($this->request->post('comment'));
 		$resource->archived = EArchiveStatus::AWAITING_ARCHIVATION;
 		$resource->archived_by = $user->primaryKey;
 		$resource->archived_at = date('Y-m-d H:i:s', time());
+		$resource->archived_comment = empty($comment) ? null : $comment;
 		$trans = \Yii::$app->db->beginTransaction();
 		try {
 			$queueId = $this->getQueue()->push(new ArchiveResourceJob([
