@@ -10,5 +10,7 @@ return [
 		'client_host' => 'https://erp.db.dev',
 		'client_list' => 'https://erp.db.dev/prod',
 		'client_register' => 'https://erp.db.dev/register',
+		'requests_timeout' => 15,
+		'product_cache_timeout' => 0,
 	],
 ];

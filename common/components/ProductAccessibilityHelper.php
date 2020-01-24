@@ -10,6 +10,9 @@ use yii\helpers\Json;
 
 class ProductAccessibilityHelper {
 	const TRUSTED_USER_KEY = 'trusted';
+	const PRODUCT_CACHE_PREFIX = 'available_products_cache_';
+
+	private static $_availableProducts = [];
 
 	public static function getConfig() {
 		return @\Yii::$app->params['resourcesServer'];
@@ -25,33 +28,42 @@ class ProductAccessibilityHelper {
 	}
 
 	protected static function _requestUserCheck($email, $password = null) {
+		$config = static::getConfig();
+
 		$address =
-			static::getConfig()['login']
+			$config['login']
 			. '?key=' . static::_encodeURIComponent(static::getSecretKey())
 			. '&email=' . static::_encodeURIComponent($email);
 		if (!is_null($password)) {
 			// FIXME: Really bad way to manage password, shouldn't be processed on DB at all
 			$address .= '&password=' . static::_encodeURIComponent(\Yii::$app->security->encryptByPassword($password, static::getSecretKey()));
 		}
-		$ctx = stream_context_create(['http' =>
-			[
-				'timeout' => 15,
-			],
-		]);
-		return Json::decode(@file_get_contents($address, false, $ctx));
+		return Json::decode(@file_get_contents($address, false, stream_context_create([
+			'http' => ['timeout' => $config['requests_timeout']],
+		])));
 	}
 
 	protected static function _requestUserProducts($userKey) {
-		$ctx = stream_context_create(['http' =>
-			[
-				'timeout' => 15,
-			],
-		]);
-		$address =
-			static::getConfig()['action']
-			. '?key=' . static::_encodeURIComponent(static::getSecretKey())
-			. '&user_key=' . static::_encodeURIComponent($userKey);
-		return Json::decode(@file_get_contents($address, false, $ctx));
+		$config = static::getConfig();
+		$cacheTimeout = @$config['product_cache_timeout'];
+		$result = false;
+		if ($cacheTimeout) {
+			$result = \Yii::$app->cache->get(static::PRODUCT_CACHE_PREFIX . $userKey);
+		}
+		if ($result === false) {
+			$address =
+				$config['action']
+				. '?key=' . static::_encodeURIComponent(static::getSecretKey())
+				. '&user_key=' . static::_encodeURIComponent($userKey);
+			$result = @file_get_contents($address, false, stream_context_create([
+				'http' => ['timeout' => $config['requests_timeout']],
+			]));
+			if ($result && $cacheTimeout) {
+				\Yii::$app->cache->set(static::PRODUCT_CACHE_PREFIX . $userKey, $result, $cacheTimeout);
+			}
+		}
+
+		return $result ? Json::decode($result) : null;
 	}
 
 	public static function updateUserKey(User $user, $email, $password, &$errors = []) {
@@ -91,11 +103,12 @@ class ProductAccessibilityHelper {
 			$user->update();
 		}
 
-		$productsResponse = static::_requestUserProducts(
-			$isUserTrusted
-				? static::TRUSTED_USER_KEY
-				: $user->sc_key
-		);
+		$userKey = $isUserTrusted ? static::TRUSTED_USER_KEY : $user->sc_key;
+		if (array_key_exists($userKey, static::$_availableProducts)) {
+			return static::$_availableProducts[$userKey];
+		}
+
+		$productsResponse = static::_requestUserProducts($userKey);
 		if (!($productsResponse && $productsResponse['user_found'])) {
 			$errors['not_found'] = "Связанный пользователь SC не найден";
 			$user->sc_key = null;
@@ -107,6 +120,8 @@ class ProductAccessibilityHelper {
 			$errors['problem'] = $productsResponse['problem'];
 			return false;
 		}
+
+		static::$_availableProducts[$userKey] = $productsResponse['products'];
 
 		return $productsResponse['products'];
 	}

@@ -242,9 +242,8 @@ class Resource extends CommonRecord {
 		if ($this->status === EResourceStatus::AWAITING) {
 			if ($user->can($this::RBAC_APPROVE, ['target' => $this])) {
 				$result['canApprove'] = true;
-				$result['canDelete'] = true;
 			}
-			if ($user->id === $this->user_id) {
+			if ($user->can($this::RBAC_DELETE, ['target' => $this])) {
 				$result['canDelete'] = true;
 			}
 		} else {
@@ -259,7 +258,7 @@ class Resource extends CommonRecord {
 				if (
 					$noArchivingInProcess
 					&&
-					($user->id === $this->user_id || $user->can($this::RBAC_APPROVE, ['target' => $this]))
+					$user->can($this::RBAC_DELETE, ['target' => $this])
 				) {
 					$result['canDelete'] = true;
 				}

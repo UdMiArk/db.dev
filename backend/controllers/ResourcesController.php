@@ -25,8 +25,26 @@ use yii\web\BadRequestHttpException;
 use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 
+/**
+ * Class ResourcesController
+ * @package backend\controllers
+ *
+ * @property-read Resource $requestItem
+ */
 class ResourcesController extends BackendController {
 	public $authFullPermissions = Resource::RBAC_ALL;
+
+	protected $_requestItem = null;
+
+	public function getRequestItem() {
+		if (is_null($this->_requestItem)) {
+			$id = $this->request->getQueryParam('id');
+			if ($id) {
+				$this->_requestItem = $this->_getRequestItem($id);
+			}
+		}
+		return $this->_requestItem;
+	}
 
 	public function behaviors() {
 		$behaviors = ArrayHelper::merge(parent::behaviors(), [
@@ -40,17 +58,23 @@ class ResourcesController extends BackendController {
 					'creation-data' => ['GET'],
 					'existing-types' => ['GET'],
 
-					'test' => ['GET'],
-
 					'*' => ['POST'],
 				],
 			],
 		]);
+
+		$fnGetRequestTarget = (function () {
+			return [
+				'target' => $this->requestItem,
+			];
+		});
+
 		$behaviors['access']['rules'] = array_merge([
 			[
-				'actions' => ['view', 'markets', 'structure', 'list', 'existing-types', 'test'],
+				'actions' => ['markets', 'structure', 'list', 'existing-types'],
 				'permissions' => [Resource::RBAC_VIEW],
 				'allow' => true,
+				'roleParams' => ['index' => true],
 			],
 			[
 				'actions' => ['create', 'creation-data', 'sc-login'],
@@ -58,32 +82,38 @@ class ResourcesController extends BackendController {
 				'allow' => true,
 			],
 			[
+				'actions' => ['view'],
+				'permissions' => [Resource::RBAC_VIEW],
+				'allow' => true,
+				'roleParams' => $fnGetRequestTarget,
+			],
+			[
 				'actions' => ['update'],
 				'permissions' => [Resource::RBAC_UPDATE],
 				'allow' => true,
+				'roleParams' => $fnGetRequestTarget,
 			],
 			[
 				'actions' => ['delete'],
-				'permissions' => [Resource::RBAC_DELETE, Resource::RBAC_CREATE],
+				'permissions' => [Resource::RBAC_DELETE],
 				'allow' => true,
+				'roleParams' => $fnGetRequestTarget,
 			],
 			[
 				'actions' => ['set-status'],
 				'permissions' => [Resource::RBAC_APPROVE],
 				'allow' => true,
+				'roleParams' => $fnGetRequestTarget,
 			],
 			[
-				'actions' => ['archive', 'dearchive'],
-				'permissions' => [Resource::RBAC_APPROVE],
+				'actions' => ['archive', 'unpack'],
+				'permissions' => [Resource::RBAC_ARCHIVE],
 				'allow' => true,
+				'roleParams' => $fnGetRequestTarget,
 			],
 		], $behaviors['access']['rules']);
 
 		return $behaviors;
-	}
-
-	public function actionTest() {
-		return $this->asJson(\Yii::$app->authManager->checkAccess(null, Resource::RBAC_VIEW));
 	}
 
 	public function actionMarkets() {
