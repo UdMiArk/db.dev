@@ -11,6 +11,7 @@
 		"ext-ctype": "*",
 		"ext-openssl": "*",
 		"ext-ldap": "*",
+		"ext-zip": "*",
 		"ext-json": "*",
 		"yiisoft/yii2": "~2.0.30",
 		"yiisoft/yii2-swiftmailer": "~2.0.0 || ~2.1.0",

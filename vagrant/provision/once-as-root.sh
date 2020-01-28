@@ -45,7 +45,7 @@ echo mysql-community-server mysql-community-server/re-root-pass password '' | su
 
 info_str "Install additional software"
 apt-get install -y bash-completion debconf-utils
-apt-get install -y php7.3-fpm php7.3-cli php7.3-curl php7.3-intl php7.3-mysqlnd php7.3-gd php7.3-mbstring php7.3-xml php7.3-ldap unzip nginx mysql-server php.xdebug
+apt-get install -y php7.3-fpm php7.3-cli php7.3-curl php7.3-intl php7.3-mysqlnd php7.3-gd php7.3-mbstring php7.3-xml php7.3-zip php7.3-ldap unzip nginx mysql-server php.xdebug
 apt-get autoremove -y
 
 info_str "Configure MySQL"

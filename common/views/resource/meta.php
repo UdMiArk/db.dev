@@ -26,7 +26,14 @@ $market = $product->market;
 
 <?php if ($resource->status_at) { ?>
 Дата выставления статуса: <?= $resource->status_at ?>
+<?php } if ($resource->status_comment) { ?>
+
+Комментарий к статусу: #############
+	<?= implode("\n\t", explode("\n", $resource->status_comment)) ?>
+
+##########################
 <?php } ?>
+
 
 Рынок: <?= $market->name ?>
 
@@ -41,7 +48,17 @@ $market = $product->market;
 
 <?php if ($resource->archived_by) { ?>
 Кто отправил в архив: <?= $resource->archivedBy->name ?>
-<?php }} if ($resource->comment) { ?>
+<?php }
+if ($resource->archived_comment) {
+	?>
+
+Комментарий к архивации: #############
+	<?= implode("\n\t", explode("\n", $resource->archived_comment)) ?>
+
+##########################
+	<?php
+}
+} if ($resource->comment) { ?>
 
 
 Комментарий: #############

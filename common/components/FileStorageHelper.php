@@ -7,7 +7,6 @@ namespace common\components;
 use common\models\Market;
 use common\models\Product;
 use common\models\Resource;
-use PharData;
 use yii\base\Exception;
 use yii\helpers\FileHelper;
 use yii2tech\filestorage\local\Bucket;
@@ -144,15 +143,14 @@ class FileStorageHelper {
 			$simpleTempFileName = tempnam(sys_get_temp_dir(), 'ARCHIVE');
 			$tempFileName = $simpleTempFileName . '.zip';
 			try {
-				$phar = new PharData($tempFileName);
-				$phar->buildFromDirectory($resourceDir);
-				$phar->addFromString(static::META_FILE_NAME, static::generateResourceMetaDescription($resource));
+				Archivator::pack($resourceDir, $tempFileName, [
+					static::META_FILE_NAME => static::generateResourceMetaDescription($resource),
+				]);
 				$archivedResourceName = static::getResourceArchiveName($resource);
 				if (!$productBucket->copyFileIn($tempFileName, $archivedResourceName)) {
 					throw new Exception("Не удалось записать архивную версию ресурса '" . $resource->name . "' в хранилище ОП");
 				}
 			} finally {
-				unset($phar);
 				isset($tempFileName) && unlink($tempFileName);
 				isset($simpleTempFileName) && unlink($simpleTempFileName);
 			}
@@ -201,10 +199,8 @@ class FileStorageHelper {
 				if (!$productBucket->copyFileOut($archivedResourceName, $tempFileName)) {
 					throw new Exception("Не удалось прочитать архив хранилища ресурса '" . $resource->primaryKey . "'");
 				}
-				$phar = new PharData($tempFileName);
-				$phar->extractTo($resourceDir);
+				Archivator::unpack($tempFileName, $resourceDir);
 			} finally {
-				unset($phar);
 				isset($tempFileName) && unlink($tempFileName);
 				isset($simpleTempFileName) && unlink($simpleTempFileName);
 			}
