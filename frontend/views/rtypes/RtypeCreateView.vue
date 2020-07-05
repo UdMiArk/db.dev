@@ -28,9 +28,10 @@
 			defaultValues() {
 				return Object.freeze({
 					name: "",
+					group_name: "",
+					responsible_id: null,
 					description_link: "",
 					description: "",
-					responsible_id: null,
 					typeAttributes: null
 				});
 			}
@@ -54,7 +55,7 @@
 					.finally(() => (this.processing = false, processDisplay.close()));
 			},
 			handleCreationSuccess(data) {
-				this.$router.replace({name: "userView", params: {qPk: data.__id.toString()}});
+				this.$router.replace({name: "rtypeView", params: {qPk: data.__id.toString()}});
 			}
 		}
 	};

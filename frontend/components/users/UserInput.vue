@@ -70,7 +70,7 @@
 					const searchString = this.searchString.toLowerCase();
 					return Object.freeze(this.availableItems.filter(x => x.name.toLowerCase().includes(searchString)));
 				}
-				return this.availableItems;
+				return this.availableItems || Object.freeze([]);
 			}
 		},
 		methods: {
