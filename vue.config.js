@@ -21,7 +21,6 @@ module.exports = {
 		port: 80,
 		proxy: {
 			["/api"]: {
-				//target: "http://192.168.83.137/",
 				target: "http://db.local/",
 				changeOrigin: true
 			}
