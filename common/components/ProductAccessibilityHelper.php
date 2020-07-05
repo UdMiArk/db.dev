@@ -38,9 +38,16 @@ class ProductAccessibilityHelper {
 			// FIXME: Really bad way to manage password, shouldn't be processed on DB at all
 			$address .= '&password=' . static::_encodeURIComponent(\Yii::$app->security->encryptByPassword($password, static::getSecretKey()));
 		}
-		return Json::decode(@file_get_contents($address, false, stream_context_create([
+		$content = @file_get_contents($address, false, stream_context_create([
 			'http' => ['timeout' => $config['requests_timeout']],
-		])));
+		]));
+		if ($content === false) {
+			return [
+				'found' => true,
+				'problem' => "Не удалось получить данные от ERP",
+			];
+		}
+		return Json::decode($content);
 	}
 
 	protected static function _requestUserProducts($userKey) {

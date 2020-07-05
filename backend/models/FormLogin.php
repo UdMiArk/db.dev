@@ -97,12 +97,14 @@ class FormLogin extends FormModel {
 		$adManager = $this->adManager;
 		$provider = $adManager->getProvider($this->domain);
 
-		//if ($this->login !== 'test.user') {
-		if (!$provider->auth()->attempt($this->login, $this->password/*, true*/)) {
-			$this->addError('password', 'Неизвестная комбинация имени пользователя и пароля');
-			return false;
+		// Allow login with test user for debugging even without working LDAP Server
+		if (!(defined('YII_DEBUG') && YII_DEBUG && $this->login === 'test.user')) {
+			if (!$provider->auth()->attempt($this->login, $this->password/*, true*/)) {
+				$this->addError('password', 'Неизвестная комбинация имени пользователя и пароля');
+				return false;
+			}
 		}
-		//}
+
 		$user = AdldapHelper::ensureUserExists($this->login, $this->domain, $provider);
 		if (!$user) {
 			return false;

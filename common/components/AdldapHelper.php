@@ -37,21 +37,20 @@ class AdldapHelper {
 	 * @throws Exception
 	 */
 	public static function updateLdapData(User $user, Provider $provider) {
-		//if ($user->login !== 'test.user') {
-		$data = static::getUserLdapData($user, $provider);
-		if (!$data) {
-			throw new Exception("Не удалось найти LDAP пользователя: " . $user->login . $user->domain);
-		}
-
-		/* @var \Adldap\Models\User $data */
-		$user->email = $data->getEmail() ?? $data->getUserPrincipalName();
-		$user->name = $data->getDisplayName();
-		/*} else {
+		// Fill in test user for debugging without need for working LDAP Server
+		if (defined('YII_DEBUG') && YII_DEBUG && $user->login === 'test.user') {
 			$user->email = 'user@db.dev';
 			$user->name = "Тестовый пользователь";
-		}*/
+		} else {
+			$data = static::getUserLdapData($user, $provider);
+			if (!$data) {
+				throw new Exception("Не удалось найти LDAP пользователя: " . $user->login . $user->domain);
+			}
 
-		//file_put_contents(\Yii::getAlias('@runtime/ldap.json'), Json::encode($data->getAttributes(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE));
+			/* @var \Adldap\Models\User $data */
+			$user->email = $data->getEmail() ?? $data->getUserPrincipalName();
+			$user->name = $data->getDisplayName();
+		}
 
 		if ($user->isNewRecord || !empty($user->getDirtyAttributes())) {
 			if (!$user->save()) {
